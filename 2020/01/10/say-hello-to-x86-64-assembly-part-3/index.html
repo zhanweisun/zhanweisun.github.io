@@ -1,0 +1,1354 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="Say hello to x86_64 Assembly [part 3], 孙老师">
+    <meta name="description" content="翻译原文地址翻译原文地址
+Say hello to x86_64 Assembly [part 3]堆栈是存储器中的一个特殊区域，其工作原理是后进先出。
+The stack is special region in memory, whic">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Say hello to x86_64 Assembly [part 3] | 孙老师</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    
+    <script src="/libs/jquery/jquery.min.js"></script>
+    
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper head-container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">孙老师</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">孙老师</div>
+        <div class="logo-desc">
+            
+            Never really desperate, only the lost of the soul.
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/zhanweisun" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/zhanweisun" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/17.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <div class="description center-align post-title">
+                        Say hello to x86_64 Assembly [part 3]
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        height: calc(100vh - 250px);
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/x86/">
+                                <span class="chip bg-color">x86</span>
+                            </a>
+                        
+                            <a href="/tags/x64/">
+                                <span class="chip bg-color">x64</span>
+                            </a>
+                        
+                            <a href="/tags/%E6%B1%87%E7%BC%96/">
+                                <span class="chip bg-color">汇编</span>
+                            </a>
+                        
+                            <a href="/tags/assembly/">
+                                <span class="chip bg-color">assembly</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2020-01-10
+                </div>
+                
+
+                
+
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    16 分
+                </div>
+                
+				
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+            
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <p><a href="https://github.com/0xAX/asm" target="_blank" rel="noopener">翻译原文地址</a><a href="https://github.com/0xAX/asm" target="_blank" rel="noopener">翻译原文地址</a></p>
+<h3 id="Say-hello-to-x86-64-Assembly-part-3"><a href="#Say-hello-to-x86-64-Assembly-part-3" class="headerlink" title="Say hello to x86_64 Assembly [part 3]"></a>Say hello to x86_64 Assembly [part 3]</h3><p>堆栈是存储器中的一个特殊区域，其工作原理是后进先出。</p>
+<p>The stack is special region in memory, which operates on the principle lifo (Last Input, First Output).</p>
+<p>我们有16个通用寄存器用于临时数据存储。它们是RAX、RBX、RCX、RDX、RDI、RSI、RBP、RSP和R8-R15。对于应用程序来说太少了。所以我们可以在堆栈中存储数据。堆栈的另一个用法是：当我们调用函数时，返回地址的副本保存在堆栈中。函数执行结束后，返回地址被复制到（RIP）中应用程序将继续从函数后的下一个位置执行。</p>
+<p>We have 16 general-purpose registers for temporary data storage. They are RAX, RBX, RCX, RDX, RDI, RSI, RBP, RSP and R8-R15. It’s too few for serious applications. So we can store data in the stack. Yet another usage of stack is following: When we call a function, return address copied in stack. After end of function execution, address copied in commands counter (RIP) and application continue to executes from next place after function.</p>
+<p>例子 :</p>
+<pre class=" language-nasm"><code class="language-nasm"><span class="token keyword">global _start</span>
+
+<span class="token keyword">section .text</span>
+
+<span class="token label function">_start:</span>
+        mov <span class="token register variable">rax</span>, <span class="token number">1</span>
+        call incRax
+        cmp <span class="token register variable">rax</span>, <span class="token number">2</span>
+        jne exit
+        <span class="token comment" spellcheck="true">;;</span>
+        <span class="token comment" spellcheck="true">;; Do something</span>
+        <span class="token comment" spellcheck="true">;;</span>
+
+<span class="token label function">incRax:</span>
+        inc <span class="token register variable">rax</span>
+        ret</code></pre>
+<p>这里我们可以看到，在应用程序运行之后，rax等于1。然后我们调用incRax函数，它将rax值增加到1，现在rax值必须是2。在这个执行之后，继续从8行开始，我们将rax值与2进行比较。同样，我们可以在<a href="https://0xax.github.io/asm_3/www.x86-64.org/documentation/abi.pdf" target="_blank" rel="noopener">System V AMD64 ABI</a>中读取，前六个函数参数在寄存器中传递。他们是：</p>
+<p>Here we can see that after application runnning, rax is equal to 1. Then we call a function incRax, which increases rax value to 1, and now rax value must be 2. After this execution continues from 8 line, where we compare rax value with 2. Also as we can read in <a href="https://0xax.github.io/asm_3/www.x86-64.org/documentation/abi.pdf" target="_blank" rel="noopener">System V AMD64 ABI</a>, the first six function arguments passed in registers. They are:</p>
+<ul>
+<li><p>rdi-第一个参数</p>
+</li>
+<li><p>rsi-第二个参数</p>
+</li>
+<li><p>rdx-第三个参数</p>
+</li>
+<li><p>rcx-第四个参数</p>
+</li>
+<li><p>r8-第五个参数</p>
+</li>
+<li><p>r9-第六个参数</p>
+</li>
+<li><p><code>rdi</code> - first argument</p>
+</li>
+<li><p><code>rsi</code> - second argument</p>
+</li>
+<li><p><code>rdx</code> - third argument</p>
+</li>
+<li><p><code>rcx</code> - fourth argument</p>
+</li>
+<li><p><code>r8</code> - fifth argument</p>
+</li>
+<li><p><code>r9</code> - sixth</p>
+</li>
+</ul>
+<p>下一个参数将在堆栈中传递。如果我们有这样的函数：</p>
+<p>Next arguments will be passed in stack. So if we have function like this:</p>
+<pre class=" language-c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">foo</span><span class="token punctuation">(</span><span class="token keyword">int</span> a1<span class="token punctuation">,</span> <span class="token keyword">int</span> a2<span class="token punctuation">,</span> <span class="token keyword">int</span> a3<span class="token punctuation">,</span> <span class="token keyword">int</span> a4<span class="token punctuation">,</span> <span class="token keyword">int</span> a5<span class="token punctuation">,</span> <span class="token keyword">int</span> a6<span class="token punctuation">,</span> <span class="token keyword">int</span> a7<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>a1 <span class="token operator">+</span> a2 <span class="token operator">-</span> a3 <span class="token operator">-</span> a4 <span class="token operator">+</span> a5 <span class="token operator">-</span> a6<span class="token punctuation">)</span> <span class="token operator">*</span> a7<span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>然后，前六个参数将在寄存器中传递，但7个参数将在堆栈中传递。</p>
+<p>Then first six arguments will be passed in registers, but 7 argument will be passed in stack.</p>
+<h4 id="堆栈指针"><a href="#堆栈指针" class="headerlink" title="堆栈指针"></a>堆栈指针</h4><p>Stack pointer</p>
+<p>正如我所说，我们有16个通用寄存器，有两个有趣的寄存器-RSP和RBP。RBP是基指针寄存器。它指向当前堆栈帧的基部。RSP是堆栈指针，它指向当前堆栈帧的顶部。</p>
+<p>As i wroute about we have 16 general-purpose registers, and there are two interesting registers - RSP and RBP. RBP is the base pointer register. It points to the base of the current stack frame. RSP is the stack pointer, which points to the top of current stack frame.</p>
+<p>命令</p>
+<p>Commands</p>
+<p>我们有两个使用stack的命令：</p>
+<ul>
+<li><p>push 参数-递增堆栈指针（RSP）并将参数存储在堆栈指针所指向的位置</p>
+</li>
+<li><p>pop 参数-将数据从堆栈指针指向的位置复制到参数</p>
+</li>
+</ul>
+<p>We have two commands for work with stack:</p>
+<ul>
+<li><code>push argument</code> - increments stack pointer (RSP) and stores argument in location pointed by stack pointer</li>
+<li><code>pop argument</code> - copied data to argument from location pointed by stack pointer</li>
+</ul>
+<p>让我们看一个简单的例子:</p>
+<p>Let’s look on one simple example:</p>
+<pre class=" language-nasm"><code class="language-nasm"><span class="token keyword">global _start</span>
+
+<span class="token keyword">section .text</span>
+
+<span class="token label function">_start:</span>
+        mov <span class="token register variable">rax</span>, <span class="token number">1</span>
+        mov <span class="token register variable">rdx</span>, <span class="token number">2</span>
+        push <span class="token register variable">rax</span>
+        push <span class="token register variable">rdx</span>
+
+        mov <span class="token register variable">rax</span>, <span class="token operator">[</span><span class="token register variable">rsp</span> <span class="token operator">+</span> <span class="token number">8</span><span class="token operator">]</span>
+
+        <span class="token comment" spellcheck="true">;;</span>
+        <span class="token comment" spellcheck="true">;; Do something</span>
+        <span class="token comment" spellcheck="true">;;</span></code></pre>
+<p>这里我们可以看到，我们把1放到rax寄存器，2放到rdx寄存器。之后，我们推送这些寄存器的值到堆栈中。堆栈起后进先出的作用。因此，在这个堆栈之后，我们的应用程序将具有以下结构：</p>
+<p>Here we can see that we put 1 to rax register and 2 to rdx register. After it we push to stack values of these registers. Stack works as LIFO (Last In First Out). So after this stack or our application will have following structure:</p>
+<p><img src="https://zhanweisun.github.io/image/Diagram.png?raw=true" alt="Diagram"></p>
+<p>然后我们从地址为rsp+8的堆栈中复制值。这意味着我们得到栈顶的地址，再加上8，然后按这个地址将数据复制到rax。之后rax值为1。</p>
+<p>Then we copy value from stack which has address rsp + 8. It means we get address of top of stack, add 8 to it and copy data by this address to rax. After it rax value will be 1.</p>
+<h4 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h4><p>Example</p>
+<p>让我们看一个例子。我们将编写简单的程序，它将得到两个命令行参数。将获取此参数的和并打印结果。</p>
+<p>Let’s see one example. We will write simple program, which will get two command line arguments. Will get sum of this arguments and print result.</p>
+<pre class=" language-nasm"><code class="language-nasm"><span class="token keyword">section .data</span>
+        SYS_WRITE equ <span class="token number">1</span>
+        STD_IN    equ <span class="token number">1</span>
+        SYS_EXIT  equ <span class="token number">60</span>
+        EXIT_CODE equ <span class="token number">0</span>
+
+        NEW_LINE   db <span class="token number">0xa</span>
+        WRONG_ARGC db <span class="token string">"Must be two command line argument"</span>, <span class="token number">0xa</span></code></pre>
+<p>首先，我们用一些值定义.data节。这里有四个用于Linux syscalls的常量，sys_write、sys_exit等等…我们还有两个字符串：第一个是新的行符号，第二个是错误消息。<br>让我们看看.text部分，它由程序代码组成：</p>
+<p>First of all we define <code>.data</code> section with some values. Here we have four constants for linux syscalls, for sys_write, sys_exit and etc… And also we have two strings: First is just new line symbol and second is error message.</p>
+<p>Let’s look on the <code>.text</code> section, which consists from code of program:</p>
+<pre class=" language-nasm"><code class="language-nasm"><span class="token keyword">section .text</span>
+        <span class="token keyword">global _start</span>
+
+<span class="token label function">_start:</span>
+        pop <span class="token register variable">rcx</span>
+        cmp <span class="token register variable">rcx</span>, <span class="token number">3</span>
+        jne argcError
+
+        add <span class="token register variable">rsp</span>, <span class="token number">8</span>
+        pop <span class="token register variable">rsi</span>
+        call str_to_int
+
+        mov <span class="token register variable">r10</span>, <span class="token register variable">rax</span>
+        pop <span class="token register variable">rsi</span>
+        call str_to_int
+        mov <span class="token register variable">r11</span>, <span class="token register variable">rax</span>
+
+        add <span class="token register variable">r10</span>, <span class="token register variable">r11</span></code></pre>
+<p>让我们试着理解，这里发生了什么：在 _start label 指令之后，从堆栈中获取第一个值并将其放入rcx寄存器。如果使用命令行参数运行应用程序，则在按以下顺序运行之后，所有这些参数都将位于堆栈中：</p>
+<p>Let’s try to understand, what is happening here: After _start label first instruction get first value from stack and puts it to rcx register. If we run application with command line arguments, all of their will be in stack after running in following order:</p>
+<pre class=" language-nasm"><code class="language-nasm">    <span class="token operator">[</span><span class="token register variable">rsp</span><span class="token operator">]</span> <span class="token operator">-</span> top of stack will contain arguments count.
+    <span class="token operator">[</span><span class="token register variable">rsp</span> <span class="token operator">+</span> <span class="token number">8</span><span class="token operator">]</span> <span class="token operator">-</span> will contain argv<span class="token operator">[</span><span class="token number">0</span><span class="token operator">]</span>
+    <span class="token operator">[</span><span class="token register variable">rsp</span> <span class="token operator">+</span> <span class="token number">16</span><span class="token operator">]</span> <span class="token operator">-</span> will contain argv<span class="token operator">[</span><span class="token number">1</span><span class="token operator">]</span>
+    and so on...</code></pre>
+<p>所以我们得到命令行参数count并把它放到rcx中。之后我们将rcx与3进行比较。如果它们不相等，我们跳到argcError标签，它只打印错误消息：</p>
+<p>So we get command line arguments count and put it to rcx. After it we compare rcx with 3. And if they are not equal we jump to argcError label which just prints error message:</p>
+<pre class=" language-nasm"><code class="language-nasm"><span class="token label function">argcError:</span>
+    <span class="token comment" spellcheck="true">;; sys_write syscall</span>
+    mov     <span class="token register variable">rax</span>, <span class="token number">1</span>
+    <span class="token comment" spellcheck="true">;; file descritor, standard output</span>
+    mov     <span class="token register variable">rdi</span>, <span class="token number">1</span>
+    <span class="token comment" spellcheck="true">;; message address</span>
+    mov     <span class="token register variable">rsi</span>, WRONG_ARGC
+    <span class="token comment" spellcheck="true">;; length of message</span>
+    mov     <span class="token register variable">rdx</span>, <span class="token number">34</span>
+    <span class="token comment" spellcheck="true">;; call write syscall</span>
+    syscall
+    <span class="token comment" spellcheck="true">;; exit from program</span>
+    jmp exit</code></pre>
+<p>当我们有两个参数时为什么我们要和3比较。很简单。第一个参数是程序名，后面都是我们传递给程序的命令行参数。好的，如果我们传递了两个命令行参数，我们将转到10行。这里我们将rsp移到8，从而丢失了第一个参数——程序名。现在rsp指向我们传递的第一个命令行参数。我们用pop命令得到它，并将其放入rsi寄存器，然后调用函数将其转换为整数。接下来我们将阅读 str_to_int 实现。函数结束后，我们在rax寄存器中有整数值，并将其保存在r10寄存器中。在这之后我们做同样的操作但是用r11。最后，我们在r10和r11寄存器中有两个整数值，现在可以用add命令求出它的和。现在我们必须将结果转换为字符串并打印出来。让我们看看怎么做：</p>
+<p>Why we compare with 3 when we have two arguments. It’s simple. First argument is a program name, and all after it are command line arguments which we passed to program. Ok, if we passed two command line arguments we go next to 10 line. Here we shift rsp to 8 and thereby missing the first argument - the name of the program. Now rsp points to first command line argument which we passed. We get it with pop command and put it to rsi register and call function for converting it to integer. Next we read about <code>str_to_int</code> implementation. After our function ends to work we have integer value in rax register and we save it in r10 register. After this we do the same operation but with r11. In the end we have two integer values in r10 and r11 registers, now we can get sum of it with add command. Now we must convert result to string and print it. Let’s see how to do it:</p>
+<pre class=" language-nasm"><code class="language-nasm">mov <span class="token register variable">rax</span>, <span class="token register variable">r10</span>
+<span class="token comment" spellcheck="true">;; number counter</span>
+xor <span class="token register variable">r12</span>, <span class="token register variable">r12</span>
+<span class="token comment" spellcheck="true">;; convert to string</span>
+jmp int_to_str</code></pre>
+<p>在这里，我们将命令行参数的和放入rax寄存器，将r12设置为零，并跳转到int_to_str。我们已经知道如何打印字符串，我们有什么可以打印。让我们看看str_to_int和int_to_str的实现。</p>
+<p>Here we put sum of command line arguments to rax register, set r12 to zero and jump to int_to_str. Ok now we have base of our program. We already know how to print string and we have what to print. Let’s see at str_to_int and int_to_str implementation.</p>
+<pre class=" language-nasm"><code class="language-nasm"><span class="token label function">str_to_int:</span>
+            xor <span class="token register variable">rax</span>, <span class="token register variable">rax</span>
+            mov <span class="token register variable">rcx</span>,  <span class="token number">10</span>
+<span class="token label function">next:</span>
+        cmp <span class="token operator">[</span><span class="token register variable">rsi</span><span class="token operator">]</span>, byte <span class="token number">0</span>
+        je return_str
+        mov <span class="token register variable">bl</span>, <span class="token operator">[</span><span class="token register variable">rsi</span><span class="token operator">]</span>
+            sub <span class="token register variable">bl</span>, <span class="token number">48</span>
+        mul <span class="token register variable">rcx</span>
+        add <span class="token register variable">rax</span>, <span class="token register variable">rbx</span>
+        inc <span class="token register variable">rsi</span>
+        jmp next
+
+<span class="token label function">return_str:</span>
+        ret</code></pre>
+<p>在str_to_int开始时，我们将rax设置为0，rcx设置为10。然后我们转到下一个标签。正如您在上面的示例中所看到的（str_to_int调用之前的第一行），我们从堆栈中将argv[1]放在rsi中。现在我们将rsi的第一个字节与0进行比较，因为每个字符串都以NULL结尾，如果是，我们将返回。如果不是0，我们将它的值复制到一个字节的bl寄存器，并从中减去48。为什么是48？从0到9的所有数字在asci表中都有48到57个代码。所以如果我们从数字符号48（例如从57）中减去，我们得到数字。然后在rcx上乘以rax（值为-10）。在此之后，我们增加rsi以获得下一个字节并再次循环。算法很简单。例如，如果rsi指向‘5’ ‘7’ ‘6’ ‘\000’序列，则将执行以下步骤：</p>
+<p>At the start of str_to_int, we set up rax to 0 and rcx to 10. Then we go to next label. As you can see in above example (first line before first call of str_to_int) we put argv[1] in rsi from stack. Now we compare first byte of rsi with 0, because every string ends with NULL symbol and if it is we return. If it is not 0 we copy it’s value to one byte bl register and substract 48 from it. Why 48? All numbers from 0 to 9 have 48 to 57 codes in asci table. So if we substract from number symbol 48 (for example from 57) we get number. Then we multiply rax on rcx (which has value - 10). After this we increment rsi for getting next byte and loop again. Algorthm is simple. For example if rsi points to ‘5’ ‘7’ ‘6’ ‘\000’ sequence, then will be following steps:</p>
+<pre class=" language-nasm"><code class="language-nasm">    <span class="token register variable">rax</span> <span class="token operator">=</span> <span class="token number">0</span>
+    get first byte <span class="token operator">-</span> <span class="token number">5</span> and put it to <span class="token register variable">rbx</span>
+    <span class="token register variable">rax</span> <span class="token operator">*</span> <span class="token number">10</span> <span class="token operator">-</span><span class="token operator">-</span><span class="token operator">></span> <span class="token register variable">rax</span> <span class="token operator">=</span> <span class="token number">0</span> <span class="token operator">*</span> <span class="token number">10</span>
+    <span class="token register variable">rax</span> <span class="token operator">=</span> <span class="token register variable">rax</span> <span class="token operator">+</span> <span class="token register variable">rbx</span> <span class="token operator">=</span> <span class="token number">0</span> <span class="token operator">+</span> <span class="token number">5</span>
+    Get second byte <span class="token operator">-</span> <span class="token number">7</span> and put it to <span class="token register variable">rbx</span>
+    <span class="token register variable">rax</span> <span class="token operator">*</span> <span class="token number">10</span> <span class="token operator">-</span><span class="token operator">-</span><span class="token operator">></span> <span class="token register variable">rax</span> <span class="token operator">=</span> <span class="token number">5</span> <span class="token operator">*</span> <span class="token number">10</span> <span class="token operator">=</span> <span class="token number">50</span>
+    <span class="token register variable">rax</span> <span class="token operator">=</span> <span class="token register variable">rax</span> <span class="token operator">+</span> <span class="token register variable">rbx</span> <span class="token operator">=</span> <span class="token number">50</span> <span class="token operator">+</span> <span class="token number">7</span> <span class="token operator">=</span> <span class="token number">57</span>
+    and loop it while <span class="token register variable">rsi</span> is not \<span class="token number">000</span></code></pre>
+<p>在str_to_int之后我们将得到rax中的数字。现在让我们看看int_to_str：</p>
+<p>After str_to_int we will have number in rax. Now let’s look at int_to_str:</p>
+<pre class=" language-nasm"><code class="language-nasm"><span class="token label function">int_to_str:</span>
+        mov <span class="token register variable">rdx</span>, <span class="token number">0</span>
+        mov <span class="token register variable">rbx</span>, <span class="token number">10</span>
+        div <span class="token register variable">rbx</span>
+        add <span class="token register variable">rdx</span>, <span class="token number">48</span>
+        add <span class="token register variable">rdx</span>, <span class="token number">0x0</span>
+        push <span class="token register variable">rdx</span>
+        inc <span class="token register variable">r12</span>
+        cmp <span class="token register variable">rax</span>, <span class="token number">0x0</span>
+        jne int_to_str
+        jmp print</code></pre>
+<p>这里我们把0放入rdx，10放入rbx。然后我们执行除以rbx。如果我们在str_to_int调用之前查看上面的代码。我们将看到rax包含两个命令行参数的整数和。通过这个指令，我们将rax值除以rbx值，并在rdx中得到提醒，在rax中得到整个部分。接下来我们添加到rdx 48和0x0。在添加48之后，我们将得到这个数字的asci符号，所有字符串都以0x0结尾。在此之后，我们将符号保存到堆栈中，增量r12（在第一次迭代时为0，在开始时设置为0）并将rax与0进行比较，如果是0，则意味着我们结束将整数转换为字符串。算法的一步一步如下：例如我们有23</p>
+<p>Here we put 0 to rdx and 10 to rbx. Than we exeute div rbx. If we look above at code before str_to_int call. We will see that rax contains integer number - sum of two command line arguments. With this instruction we devide rax value on rbx value and get reminder in rdx and whole part in rax. Next we add to rdx 48 and 0x0. After adding 48 we’ll get asci symbol of this number and all strings much be ended with 0x0. After this we save symbol to stack, increment r12 (it’s 0 at first iteration, we set it to 0 at the _start) and compare rax with 0, if it is 0 it means that we ended to convert integer to string. Algorithm step by step is following: For example we have number 23</p>
+<pre class=" language-nasm"><code class="language-nasm">    <span class="token number">123</span> <span class="token operator">/</span> <span class="token number">10</span>. <span class="token register variable">rax</span> <span class="token operator">=</span> <span class="token number">12</span><span class="token comment" spellcheck="true">; rdx = 3</span>
+    <span class="token register variable">rdx</span> <span class="token operator">+</span> <span class="token number">48</span> <span class="token operator">=</span> <span class="token string">"3"</span>
+    push <span class="token string">"3"</span> to stack
+    compare <span class="token register variable">rax</span> with <span class="token number">0</span> if no go again
+    <span class="token number">12</span> <span class="token operator">/</span> <span class="token number">10</span>. <span class="token register variable">rax</span> <span class="token operator">=</span> <span class="token number">1</span><span class="token comment" spellcheck="true">; rdx = 2</span>
+    <span class="token register variable">rdx</span> <span class="token operator">+</span> <span class="token number">48</span> <span class="token operator">=</span> <span class="token string">"2"</span>
+    push <span class="token string">"2"</span> to stack
+    compare <span class="token register variable">rax</span> with <span class="token number">0</span>, if yes we can finish function execution and we will have <span class="token string">"2"</span> <span class="token string">"3"</span> ... in stack</code></pre>
+<p>我们实现了两个有用的函数int_to_str和str_to_int，用于将整数转换为字符串，反之亦然。现在我们有两个整数的和，它们被转换成字符串并保存在堆栈中。我们可以打印结果：</p>
+<p>We implemented two useful function <code>int_to_str</code> and <code>str_to_int</code> for converting integer number to string and vice versa. Now we have sum of two integers which was converted into string and saved in the stack. We can print result:</p>
+<pre class=" language-nasm"><code class="language-nasm"><span class="token label function">print:</span>
+    <span class="token comment" spellcheck="true">;;;; calculate number length</span>
+    mov <span class="token register variable">rax</span>, <span class="token number">1</span>
+    mul <span class="token register variable">r12</span>
+    mov <span class="token register variable">r12</span>, <span class="token number">8</span>
+    mul <span class="token register variable">r12</span>
+    mov <span class="token register variable">rdx</span>, <span class="token register variable">rax</span>
+
+    <span class="token comment" spellcheck="true">;;;; print sum</span>
+    mov <span class="token register variable">rax</span>, SYS_WRITE
+    mov <span class="token register variable">rdi</span>, STD_IN
+    mov <span class="token register variable">rsi</span>, <span class="token register variable">rsp</span>
+    <span class="token comment" spellcheck="true">;; call sys_write</span>
+    syscall
+
+jmp exit</code></pre>
+<p>我们已经知道如何用sys_write syscall打印字符串，但这里有一个有趣的部分。我们必须计算字符串的长度。如果您查看int_to_str，您将看到我们每次迭代都递增r12寄存器，因此它包含我们的字符串的字数。我们必须将它乘以8（因为我们将每个符号都推到堆栈中）,它将是需要打印字符串的长度。在这之后，我们每次都把1放在rax（sys_write number）、1放在rdi（stdin）、字符串长度放在rdx和指向栈顶的指针放在rsi（start of string）上。完成我们的程序：</p>
+<p>We already know how to print string with <code>sys_write</code> syscall, but here is one interesting part. We must to calculate length of string. If you will look on the <code>int_to_str</code>, you will see that we increment r12 register every iteration, so it contains amount of digits in our number. We must multiple it to 8 (because we pushed every symbol to stack) and it will be length of our string which need to print. After this we as everytime put 1 to rax (sys_write number), 1 to rdi (stdin), string length to rdx and pointer to the top of stack to rsi (start of string). And finish our program:</p>
+<pre class=" language-nasm"><code class="language-nasm"><span class="token label function">exit:</span>
+    mov <span class="token register variable">rax</span>, SYS_EXIT
+    exit code
+    mov <span class="token register variable">rdi</span>, EXIT_CODE
+    syscall</code></pre>
+<p>就这些了!</p>
+<p>That’s all.</p>
+
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://zhanweisun.github.io" rel="external nofollow noreferrer">孙老师</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://zhanweisun.github.io/2020/01/10/say-hello-to-x86-64-assembly-part-3/">http://zhanweisun.github.io/2020/01/10/say-hello-to-x86-64-assembly-part-3/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="http://zhanweisun.github.io" target="_blank">孙老师</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/x86/">
+                                    <span class="chip bg-color">x86</span>
+                                </a>
+                            
+                                <a href="/tags/x64/">
+                                    <span class="chip bg-color">x64</span>
+                                </a>
+                            
+                                <a href="/tags/%E6%B1%87%E7%BC%96/">
+                                    <span class="chip bg-color">汇编</span>
+                                </a>
+                            
+                                <a href="/tags/assembly/">
+                                    <span class="chip bg-color">assembly</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    
+    <div class="social-share" data-sites="qq,qzone,wechat,weibo,douban" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2020/01/11/say-hello-to-x86-64-assembly-part-4/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/10.jpg" class="responsive-img" alt="Say hello to x86_64 Assembly [part 4]">
+                        
+                        <span class="card-title">Say hello to x86_64 Assembly [part 4]</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            翻译原文地址
+Say hello to x86_64 Assembly [part 4]不久前，我开始写一系列关于x86_64汇编编程的博客文章。你可以通过asm标签找到它。不幸的是，我上次很忙，没有新的帖子，所以今天我继续写关于大会的帖子
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2020-01-11
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            孙老师
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/x86/">
+                        <span class="chip bg-color">x86</span>
+                    </a>
+                    
+                    <a href="/tags/x64/">
+                        <span class="chip bg-color">x64</span>
+                    </a>
+                    
+                    <a href="/tags/%E6%B1%87%E7%BC%96/">
+                        <span class="chip bg-color">汇编</span>
+                    </a>
+                    
+                    <a href="/tags/assembly/">
+                        <span class="chip bg-color">assembly</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2020/01/09/say-hello-to-x86-64-assembly-part-2/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="Say hello to x86_64 Assembly [part 2]">
+                        
+                        <span class="card-title">Say hello to x86_64 Assembly [part 2]</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            翻译原文地址
+Say hello to x86_64 Assembly [part 2]几天前，我写了第一篇博文-介绍x64汇编-Say hello to x64 Assembly [part 1]，出乎我的意料，引起了极大的兴趣：
+Som
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-01-09
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            孙老师
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/x86/">
+                        <span class="chip bg-color">x86</span>
+                    </a>
+                    
+                    <a href="/tags/x64/">
+                        <span class="chip bg-color">x64</span>
+                    </a>
+                    
+                    <a href="/tags/%E6%B1%87%E7%BC%96/">
+                        <span class="chip bg-color">汇编</span>
+                    </a>
+                    
+                    <a href="/tags/assembly/">
+                        <span class="chip bg-color">assembly</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+    
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+    <footer class="page-footer bg-color">
+    <div class="container row center-align">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            <span id="year">年份</span>
+            <a href="http://zhanweisun.github.io" target="_blank">孙老师</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+            
+            <span id="sitetime">载入运行时间...</span>
+            <script>
+                function siteTime() {
+                    window.setTimeout("siteTime()", 1000);
+                    var seconds = 1000;
+                    var minutes = seconds * 60;
+                    var hours = minutes * 60;
+                    var days = hours * 24;
+                    var years = days * 365;
+                    var today = new Date();
+                    var startYear = "2019";
+                    var startMonth = "12";
+                    var startDate = "4";
+                    var startHour = "18";
+                    var startMinute = "0";
+                    var startSecond = "0";
+                    var todayYear = today.getFullYear();
+                    var todayMonth = today.getMonth() + 1;
+                    var todayDate = today.getDate();
+                    var todayHour = today.getHours();
+                    var todayMinute = today.getMinutes();
+                    var todaySecond = today.getSeconds();
+                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
+                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
+                    var diff = t2 - t1;
+                    var diffYears = Math.floor(diff / years);
+                    var diffDays = Math.floor((diff / days) - diffYears * 365);
+                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
+                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
+                        minutes);
+                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
+                        diffMinutes * minutes) / seconds);
+                    if (startYear == todayYear) {
+                        document.getElementById("year").innerHTML = todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已运行 " + diffDays + " 天 " + diffHours +
+                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    } else {
+                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已运行 " + diffYears + " 年 " + diffDays +
+                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    }
+                }
+                setInterval(siteTime, 1000);
+            </script>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/zhanweisun" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:847491180@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=847491180" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 847491180" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+
+
+
+
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+$(function () {
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+});
+</script>
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <script type="text/javascript" src="/libs/background/ribbon-dynamic.js" async="async"></script>
+    
+    
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>

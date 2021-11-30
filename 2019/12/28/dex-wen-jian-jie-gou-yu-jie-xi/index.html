@@ -1,0 +1,1488 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="DEX文件结构与解析, 孙老师">
+    <meta name="description" content="DEX文件结构与解析Dex是Dalvik虚拟机的执行文件，对于每一个开发者来说，他的结构对于开发这至关重要，也是我们优化的一个方面，虽然很多工作是Android Stuido和其对应的工具进行的，但是我们需要知道他的基础结构和工作原理.由于">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>DEX文件结构与解析 | 孙老师</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    
+    <script src="/libs/jquery/jquery.min.js"></script>
+    
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper head-container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">孙老师</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">孙老师</div>
+        <div class="logo-desc">
+            
+            Never really desperate, only the lost of the soul.
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/zhanweisun" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/zhanweisun" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/12.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <div class="description center-align post-title">
+                        DEX文件结构与解析
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        height: calc(100vh - 250px);
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/Dex/">
+                                <span class="chip bg-color">Dex</span>
+                            </a>
+                        
+                            <a href="/tags/%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84/">
+                                <span class="chip bg-color">文件结构</span>
+                            </a>
+                        
+                            <a href="/tags/%E4%BA%8C%E8%BF%9B%E5%88%B6/">
+                                <span class="chip bg-color">二进制</span>
+                            </a>
+                        
+                            <a href="/tags/%E8%A7%A3%E6%9E%90/">
+                                <span class="chip bg-color">解析</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2019-12-28
+                </div>
+                
+
+                
+
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    19 分
+                </div>
+                
+				
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+            
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h1 id="DEX文件结构与解析"><a href="#DEX文件结构与解析" class="headerlink" title="DEX文件结构与解析"></a>DEX文件结构与解析</h1><p>Dex是Dalvik虚拟机的执行文件，对于每一个开发者来说，他的结构对于开发这至关重要，也是我们优化的一个方面，虽然很多工作是Android Stuido和其对应的工具进行的，但是我们需要知道他的基础结构和工作原理.由于近期的工作原因,特意研究了一下dex的完整结构,并且用kotlin写了完整的结构解析代码,除了dex具体的代码解析以外的其他结构解析都已经完成.特此总结一下学到的东西,希望与大家一起进步.</p>
+<h3 id="前期准备工作"><a href="#前期准备工作" class="headerlink" title="前期准备工作"></a>前期准备工作</h3><p>1.我们在探索Dex文件结构时候需要使用一些工具，我个人推荐使用010Editor，加上Dex模板，这样更好的方便我们分析Dex的结构</p>
+<p>2.分析的Dex文件是我自己用Timber（一个开元音乐播放器）代码编译的。如果需要可以自己找个合适的分析对象</p>
+<h3 id="正式开始"><a href="#正式开始" class="headerlink" title="正式开始"></a>正式开始</h3><p>将dex从apk中解压出来，拖入010editor中，此时因为dex文件比较大，010Editor会提示是否继续进行分析</p>
+<p><img src="https://zhanweisun.github.io/image/openDex.png?raw=true" alt=""></p>
+<p>分析完成以后会在下面产生一个结构列表，我们分析就靠这个结构列表和对应的数据了。</p>
+<p><strong><img src="https://zhanweisun.github.io/image/dexStruct.png?raw=true" alt="dexStruct"></strong></p>
+<h4 id="Dex头部"><a href="#Dex头部" class="headerlink" title="Dex头部"></a>Dex头部</h4><p>首先我们用鼠标选中结构的第一行，可以看到上面文本去默认会被高亮，这第一段里面的就是Dex文件的头部</p>
+<h5 id="MagicNumber"><a href="#MagicNumber" class="headerlink" title="MagicNumber"></a>MagicNumber</h5><p>Dex文件头的前8个byte是用来识别dex文件的MagicNumber，内容是Dex.035,并以00结尾，十六进制值为 <strong>64 65 78 0A 30 33 35 00</strong></p>
+<h5 id="CheckSum"><a href="#CheckSum" class="headerlink" title="CheckSum"></a>CheckSum</h5><p>Dex文件的adler32校验和，长度4个字节，校验文件除去 maigc、checksum 外余下的所有文件区域</p>
+<h5 id="SHA1-Signature"><a href="#SHA1-Signature" class="headerlink" title="SHA1 Signature"></a>SHA1 Signature</h5><p>接下来的20个字节是ＳＨＡ１的签名</p>
+<h5 id="File-Size-文件长度"><a href="#File-Size-文件长度" class="headerlink" title="File Size 文件长度"></a>File Size 文件长度</h5><p>文件长度４个字节，所以单个Ｄｅｘ文件大小不可能超过４ＧＢ，但是因为可以拆分分多个Ｄｅｘ，所以使用４字节也是足够了</p>
+<h5 id="Header-Size"><a href="#Header-Size" class="headerlink" title="Header Size"></a>Header Size</h5><p>长度４字节，标记整个头部的长度，这里的值是0x00 00 00 70,十进制是112，如果我们选中010Editor下面的结构框的第一个名字叫　struct header_item dex_header 的item ,我们就能发现，上面选中的结构大小刚好是0Ｈ到6FＨ,共计７０Ｈ个数据,这个值一般是固定的</p>
+<h5 id="EndianTag"><a href="#EndianTag" class="headerlink" title="EndianTag"></a>EndianTag</h5><p>长度４个字节，用来标记大小端，默认值是0x12 34 56 78,指定ｃｐｕ的运行环境是大端还是小端，默认的ｉｎｔｅｌ使用的是小端，所以在010Editor上面看到的是78 56 34 12，这个请注意！！！</p>
+<h5 id="LinkSize-amp-LinkOff-字段"><a href="#LinkSize-amp-LinkOff-字段" class="headerlink" title="LinkSize &amp; LinkOff 字段"></a>LinkSize &amp; LinkOff 字段</h5><p>这两个字段指定连接段的大小和对应的文件偏移地址，通常情况都为0，linksize为0表示静态链接</p>
+<h5 id="mapOff"><a href="#mapOff" class="headerlink" title="mapOff"></a>mapOff</h5><p>指定了DexMapList的结构在Dex文件中的位置偏移，这个DexMapList结构是其他结构的一个数据大纲，里面记录了这些结构的一些信息。</p>
+<pre class=" language-c"><code class="language-c"><span class="token keyword">struct</span> DexMapList <span class="token punctuation">{</span>
+    u4 size<span class="token punctuation">;</span>               <span class="token comment" spellcheck="true">/* DexMapItem的个数 */</span>
+    DexMapItem list<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">/* DexMapItem的结构 */</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token keyword">struct</span> DexMapItem <span class="token punctuation">{</span>   
+    u2 type<span class="token punctuation">;</span>      <span class="token comment" spellcheck="true">/* kDexType开头的类型 */</span>
+    u2 unused<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">/* 未使用，用于字节对齐 */</span>
+    u4 size<span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">/* type指定类型的个数，它们在dex文件中连续存放 */</span>
+    u4 offset<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">/* 指定类型数据的文件偏移 */</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">/* type字段为一个枚举常量，通过类型名称很容易判断它的具体类型。 */</span>
+<span class="token comment" spellcheck="true">/* map item type codes */</span>
+<span class="token keyword">enum</span> <span class="token punctuation">{</span>
+    kDexTypeHeaderItem               <span class="token operator">=</span> <span class="token number">0x0000</span><span class="token punctuation">,</span>
+    kDexTypeStringIdItem             <span class="token operator">=</span> <span class="token number">0x0001</span><span class="token punctuation">,</span>
+    kDexTypeTypeIdItem               <span class="token operator">=</span> <span class="token number">0x0002</span><span class="token punctuation">,</span>
+    kDexTypeProtoIdItem              <span class="token operator">=</span> <span class="token number">0x0003</span><span class="token punctuation">,</span>
+    kDexTypeFieldIdItem              <span class="token operator">=</span> <span class="token number">0x0004</span><span class="token punctuation">,</span>
+    kDexTypeMethodIdItem             <span class="token operator">=</span> <span class="token number">0x0005</span><span class="token punctuation">,</span>
+    kDexTypeClassDefItem             <span class="token operator">=</span> <span class="token number">0x0006</span><span class="token punctuation">,</span>
+    kDexTypeMapList                  <span class="token operator">=</span> <span class="token number">0x1000</span><span class="token punctuation">,</span>
+    kDexTypeTypeList                 <span class="token operator">=</span> <span class="token number">0x1001</span><span class="token punctuation">,</span>
+    kDexTypeAnnotationSetRefList     <span class="token operator">=</span> <span class="token number">0x1002</span><span class="token punctuation">,</span>
+    kDexTypeAnnotationSetItem        <span class="token operator">=</span> <span class="token number">0x1003</span><span class="token punctuation">,</span>
+    kDexTypeClassDataItem            <span class="token operator">=</span> <span class="token number">0x2000</span><span class="token punctuation">,</span>
+    kDexTypeCodeItem                 <span class="token operator">=</span> <span class="token number">0x2001</span><span class="token punctuation">,</span>
+    kDexTypeStringDataItem           <span class="token operator">=</span> <span class="token number">0x2002</span><span class="token punctuation">,</span>
+    kDexTypeDebugInfoItem            <span class="token operator">=</span> <span class="token number">0x2003</span><span class="token punctuation">,</span>
+    kDexTypeAnnotationItem           <span class="token operator">=</span> <span class="token number">0x2004</span><span class="token punctuation">,</span>
+    kDexTypeEncodedArrayItem         <span class="token operator">=</span> <span class="token number">0x2005</span><span class="token punctuation">,</span>
+    kDexTypeAnnotationsDirectoryItem <span class="token operator">=</span> <span class="token number">0x2006</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span></code></pre>
+<p><img src="https://zhanweisun.github.io/image/DexMapListStruct.jpg?raw=true" alt="DexMapListStruct"></p>
+<p>这个dex_map_list 结构保存在DEX文件的最末尾处，并且第一个字节就是保存的结构数量，也就是map_item的数量</p>
+<p>map_item结构如下图所示,单一结构长度位12个字节，其中前两个字节是描述对应的段类型，紧跟着的2个字节是对齐字节，无意义。接下来的4个字节是对应的段大小，最后的4个字节是对应的段偏移，以上就是关于mapoff对应的内容的解释</p>
+<p><img src="https://zhanweisun.github.io/image/map_item.jpg?raw=true" alt=""></p>
+<h5 id="stringIdsSize-amp-amp-stringIdsOff字段"><a href="#stringIdsSize-amp-amp-stringIdsOff字段" class="headerlink" title="stringIdsSize &amp;&amp; stringIdsOff字段"></a>stringIdsSize &amp;&amp; stringIdsOff字段</h5><p>这两个字段是用来标记所有字符串的，stringIdsSize标记字符串的数量，stringIdsOff标记字符串偏移的首地址，知道这两个数据以后，我们就可以进行字符串的解析了.</p>
+<pre class=" language-c"><code class="language-c"><span class="token keyword">struct</span> DexStringId <span class="token punctuation">{</span>
+    u4 stringDataOff<span class="token punctuation">;</span>   <span class="token comment" spellcheck="true">/* 字符串数据偏移 */</span>
+<span class="token punctuation">}</span></code></pre>
+<p>我们先看一下stringIdsOff 这个值，截图如下</p>
+<p><img src="https://zhanweisun.github.io/image/string_ids_off.jpg?raw=true" alt="string_ids_off"></p>
+<p>我们可以看到这个数值位 70 00 00 00,这个是不是很熟悉？我们去看一下，dex的header值是多少？ 是70H，因为我们这个数值存放的问题，实际这个偏移值就是70H。</p>
+<p>也就是说，我们的Dex头部的后面紧跟着就是字符串的相关数据了。我们接着说字符串数据的解析</p>
+<p>我们把结构选择到010Editor的第二个结构体，也就是struct string_id_list dex_string_ids这里，选中这个结构体我们可以看到这个结构的全部内容。如下</p>
+<p><img src="https://zhanweisun.github.io/image/string_id_list.jpg?raw=true" alt="string_id_list"></p>
+<p>这里的展开的每一个item就是一个字符串的索引，这里强调一下是索引。不是真正的字符串。这个值对应的是真正的字符串的偏移地址，我们后面需要用到的字符串，会通过这个索引进行查表找到对应的字符串。</p>
+<h5 id="typeIdsSize-amp-typeIdsOff"><a href="#typeIdsSize-amp-typeIdsOff" class="headerlink" title="typeIdsSize &amp; typeIdsOff"></a>typeIdsSize &amp; typeIdsOff</h5><p>类型区的大小和对应的类型名字的偏移索引。</p>
+<p>这个索引的起始地址就是typeIdsOff对应的值，这个值在我的dex文件上面是0x00 02 DD 9C,然后这个起始地址开始有6393个数据，我们现在跳转到对应的地址看一下。</p>
+<pre class=" language-c"><code class="language-c"><span class="token keyword">struct</span> DexTypeId <span class="token punctuation">{</span>
+    u4 descriptorIdx<span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">/* 指向 DexStringId列表的索引 */</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span></code></pre>
+<p><img src="https://zhanweisun.github.io/image/type_ids_offset.jpg?raw=true" alt="type_ids_offset"></p>
+<p>想要精准的跳到对应的地址，我们可以直接选择结构列表里面的struct type_id_list dex_type_ids,010Editor会自动帮我们定位到对应的位置,这个时候我们再来看一下这个结构的全部数据，已经被选中了.如果我们展开这个结构，下面是每一个item的索引和item的内部结构，我们可以数一下索引的值，我这里的是从0-6392,一共是6393个结构。所以这个刚好跟我们头部的数据是对应的。</p>
+<p>接下来我们看一些type_id_item的值，大家可以在010Editor里面进行查看。里面能够看到很多的类型,例如byte，float，还有这个dex中的类对应的类型</p>
+<p><img src="https://zhanweisun.github.io/image/type_id.jpg?raw=true" alt="type_id"></p>
+<h5 id="protoIdsSize-amp-protoIdsOff"><a href="#protoIdsSize-amp-protoIdsOff" class="headerlink" title="protoIdsSize &amp; protoIdsOff"></a>protoIdsSize &amp; protoIdsOff</h5><p>protoIdsOff指向了函数原型的偏移地址，主要的标记内容  方法声明=返回类型 + 参数列表，protoIds标记对应的数量.从对应的value里面，我们就能看到函数返回值，参数类型等函数原型的标记</p>
+<pre class=" language-c"><code class="language-c">zstruct DexProtoId <span class="token punctuation">{</span>
+    u4 shortyIdx<span class="token punctuation">;</span>   <span class="token comment" spellcheck="true">/* 指向DexStringId列表的索引 */</span>
+    u4 returnTypeIdx<span class="token punctuation">;</span>   <span class="token comment" spellcheck="true">/* 指向DexTypeId列表的索引 */</span>
+    u4 parametersOff<span class="token punctuation">;</span>   <span class="token comment" spellcheck="true">/* 指向DexTypeList的偏移 */</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">struct</span> DexTypeList <span class="token punctuation">{</span>
+    u4 size<span class="token punctuation">;</span>             <span class="token comment" spellcheck="true">/* 接下来DexTypeItem的个数 */</span>
+    DexTypeItem list<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">/* DexTypeItem结构 */</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token keyword">struct</span> DexTypeItem <span class="token punctuation">{</span>
+    u2 typeIdx<span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">/* 指向DexTypeId列表的索引 */</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span></code></pre>
+<p><img src="https://zhanweisun.github.io/image/proto_ids.jpg?raw=true" alt="proto_ids"></p>
+<h5 id="field-ids-size-amp-field-ids-off"><a href="#field-ids-size-amp-field-ids-off" class="headerlink" title="field_ids_size &amp; field_ids_off"></a>field_ids_size &amp; field_ids_off</h5><p>field_ids_off偏移地址指向的结构数据全部是索引值，指明了字段所在的类、字段的类型以及字段名</p>
+<pre class=" language-c"><code class="language-c"><span class="token keyword">struct</span> DexFieldId <span class="token punctuation">{</span>
+    u2 classIdx<span class="token punctuation">;</span>   <span class="token comment" spellcheck="true">/* 类的类型，指向DexTypeId列表的索引 */</span>
+    u2 typeIdx<span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">/* 字段类型，指向DexTypeId列表的索引 */</span>
+    u4 nameIdx<span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">/* 字段名，指向DexStringId列表的索引 */</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span></code></pre>
+<p>具体请看下图,class_idx 这个field所属的类的索引值，type_idx是这个field对应的类型索引值,name_idx是这个字段的名称对应的索引值</p>
+<p><img src="https://zhanweisun.github.io/image/field_id.jpg?raw=true" alt="field_id"></p>
+<h6 id="method-ids-size-amp-method-ids-off"><a href="#method-ids-size-amp-method-ids-off" class="headerlink" title="method_ids_size &amp; method_ids_off"></a>method_ids_size &amp; method_ids_off</h6><p>method_ids_off 指定了函数方法的偏移位置，具体的字段如下代码所示</p>
+<pre class=" language-c"><code class="language-c"><span class="token keyword">struct</span> DexMethodId <span class="token punctuation">{</span>
+    u2 classIdx<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">/* 类的类型，指向DexTypeId列表的索引 */</span>
+    u2 protoIdx<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">/* 声明类型，指向DexProtoId列表的索引 */</span>
+    u4 nameIdx<span class="token punctuation">;</span>   <span class="token comment" spellcheck="true">/* 方法名，指向DexStringId列表的索引 */</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span></code></pre>
+<p>classIdx 指向这个方法所在的类对象的索引，通过索引可以获取到类对象的名称</p>
+<p>protoIdx指向的是这个方法声明的原型字符串的索引</p>
+<p>nameIdx获取这个方法名称的字符串索引</p>
+<p> 有了这三个索引对应的字符串，我们就可以获取到正确的类，方法名，参数和返回值，还是使用我们的010Editor，我们打开method_id_list dex_method_ids这个结构下面的item，我们就可以看到这些数据获取以后，我们能知道的一些东西，具体看下图</p>
+<p><img src="https://zhanweisun.github.io/image/method_idx.jpg?raw=true" alt="method_idx"></p>
+<p>我们可以在结构体的最上面看到整个的方法原型，这个是由下面的三个字段对应的字符串值拼接成的，可以完整的看到方法的声明细节。</p>
+<h5 id="class-defs-size-amp-class-defs-off"><a href="#class-defs-size-amp-class-defs-off" class="headerlink" title="class_defs_size &amp; class_defs_off"></a>class_defs_size &amp; class_defs_off</h5><p>class_defs_off指向的是类定义的偏移地址，这里的类定义结构比较复杂，里面嵌套了很多层，我们先来看一下010Editor的结构</p>
+<p><img src="https://zhanweisun.github.io/image/class_struct_item.jpg?raw=true" alt="class_struct_item"></p>
+<p>在这个结构里面，我们能看到一些基本的信息，比如class_idx索引等等,访问的标志等等,</p>
+<p>class_def_item的结构如下</p>
+<pre class=" language-c"><code class="language-c">uint   <span class="token number">32</span><span class="token operator">-</span>bit <span class="token keyword">unsigned</span> <span class="token keyword">int</span><span class="token punctuation">,</span> little<span class="token operator">-</span>endian
+<span class="token keyword">struct</span> class_def_item
+<span class="token punctuation">{</span>
+    uint class_idx<span class="token punctuation">;</span>         <span class="token comment" spellcheck="true">//描述具体的 class 类型，值是 type_ids 的一个 index 。值必须是一个 class 类型，不能是数组类型或者基本类型。   </span>
+    uint access_flags<span class="token punctuation">;</span>        <span class="token comment" spellcheck="true">//描述 class 的访问类型，诸如 public , final , static 等。在 dex-format.html 里 “access_flags Definitions” 有具体的描述 </span>
+    uint superclass_idx<span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">//描述 supperclass 的类型，值的形式跟 class_idx 一样 </span>
+    uint interface_off<span class="token punctuation">;</span>     <span class="token comment" spellcheck="true">//值为偏移地址，指向 class 的 interfaces，被指向的数据结构为 type_list 。class 若没有 interfaces 值为 0</span>
+    uint source_file_idx<span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">//表示源代码文件的信息，值是 string_ids 的一个 index。若此项信息缺失，此项值赋值为 NO_INDEX=0xffff ffff</span>
+    uint annotations_off<span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">//值是一个偏移地址，指向的内容是该 class 的注释，位置在 data 区，格式为 annotations_direcotry_item。若没有此项内容，值为 0 </span>
+    uint class_data_off<span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">//值是一个偏移地址，指向的内容是该 class 的使用到的数据，位置在 data 区，格式为 class_data_item。若没有此项内容值为 0。该结构里有很多内容，详细描述该 class 的 field、method, method 里的执行代码等信息，后面会介绍 class_data_item</span>
+    uint static_value_off<span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">//值是一个偏移地址 ，指向 data 区里的一个列表 (list)，格式为 encoded_array_item。若没有此项内容值为 0</span>
+<span class="token punctuation">}</span></code></pre>
+<p>如果仔细对比你就会发现，010Editor会将annotations_off指向的数据放在他的后面，class_data_off,static_values_off也是一样的处理方式，其实这些数据都在dex结构的其他地方，但是010Editor为了让你查看方便，把他们都放在了一起，实际的class_def_item结构都是指向和偏移，真正的解析都在对应的地址位置而不在这个类定义的结构里面</p>
+<h6 id="class-def-item-中的-annotations-off指向的内容"><a href="#class-def-item-中的-annotations-off指向的内容" class="headerlink" title="class_def_item 中的 annotations_off指向的内容"></a>class_def_item 中的 annotations_off指向的内容</h6><p>annotations指向的是annotation 相关的数据描述，这个描述的结构具体如下</p>
+<pre class=" language-c"><code class="language-c">uint   <span class="token number">32</span><span class="token operator">-</span>bit <span class="token keyword">unsigned</span> <span class="token keyword">int</span><span class="token punctuation">,</span> little<span class="token operator">-</span>endian
+<span class="token keyword">struct</span> annotation_directory_item
+<span class="token punctuation">{</span>
+    uint class_annotations_off<span class="token punctuation">;</span>        <span class="token comment" spellcheck="true">//从文件开头到直接在该类上所做的注释的偏移量；如果该类没有任何直接注释，则该值为 0。该偏移量（如果为非零值）应该是到 data 区段中某个位置的偏移量。数据格式由下文的“annotation_set_item”指定。</span>
+    uint fields_size<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//此项所注释的字段数量</span>
+    uint annotated_methods_size<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//此项所注释的方法数量</span>
+    uint annotated_parameters_size<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//此项所注释的方法参数列表的数量</span>
+
+    field_annotation field_annotations<span class="token punctuation">[</span>fields_size<span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//（可选）    所关联字段的注释列表。该列表中的元素必须按 field_idx 以升序进行排序。</span>
+    method_annotation method_annotations<span class="token punctuation">[</span>annotated_methods_size<span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//（可选）    所关联方法的注释列表。该列表中的元素必须按 method_idx 以升序进行排序。</span>
+    parameter_annotation parameter_annotations<span class="token punctuation">[</span>annotated_parameters_size<span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//（可选）所关联方法参数的注释列表。该列表中的元素必须按 method_idx 以升序进行排序。</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">struct</span> field_annotation
+<span class="token punctuation">{</span>
+    uint field_idx<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//字段（带注释）标识的 field_ids 列表中的索引</span>
+    uint annotations_off<span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">//字段（带注释）标识的 field_ids 列表中的索引</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">struct</span> method_annotation
+<span class="token punctuation">{</span>
+    uint method_idx<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//方法（带注释）标识的 method_ids 列表中的索引</span>
+    uint annotations_off<span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">//从文件开头到该方法注释列表的偏移量。偏移量应该是到 data 区段中某个位置的偏移量。数据格式由下文的“annotation_set_item”指定。</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">struct</span> parameter_annotation
+<span class="token punctuation">{</span>
+    uint method_idx<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//方法（其参数带注释）标识的 method_ids 列表中的索引</span>
+    uint annotations_off<span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">//从文件开头到该方法参数的注释列表的偏移量。偏移量应该是到 data 区段中某个位置的偏移量。数据格式由下文的“annotation_set_ref_list”指定。</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">struct</span> annotation_set_ref_list
+<span class="token punctuation">{</span>
+    unit size<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//列表的大小（以条目数表示）</span>
+    annotation_set_ref_item<span class="token punctuation">[</span>size<span class="token punctuation">]</span> list<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//列表的元素</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">struct</span> annotation_set_ref_item
+<span class="token punctuation">{</span>
+    unit annotations_off<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//从文件开头到所引用注释集的偏移量；如果此元素没有任何注释，则该值为 0。该偏移量（如果为非零值）应该是到 data 区段中某个位置的偏移量。数据格式由下文的“annotation_set_item”指定。</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">struct</span> annotation_set_item
+<span class="token punctuation">{</span>
+    unit size<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//该集合的大小（以条目数表示）</span>
+    annotation_off_item<span class="token punctuation">[</span>size<span class="token punctuation">]</span> entries<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//该集合的元素。这些元素必须按 type_idx 以升序进行排序。</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">struct</span> annotation_off_item
+<span class="token punctuation">{</span>
+    unit annotation_off<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//从文件开头到注释的偏移量。该偏移量应该是到 data 区段中某个位置的偏移量，且该位置的数据格式由下文的“annotation_item”指定。</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">struct</span> annotation_item
+<span class="token punctuation">{</span>
+    ubyte visibility<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//此注释的预期可见性（见下文）</span>
+   encoded_annotation annotation<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//已编码的注释内容，采用上文的“encoded_value 编码”下的“encoded_annotation 格式”所述的格式。</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">//可见值</span>
+<span class="token comment" spellcheck="true">// VISIBILITY_BUILD            0x00    预计仅在构建时（例如，在编译其他代码期间）可见</span>
+<span class="token comment" spellcheck="true">//VISIBILITY_RUNTIME    0x01    预计在运行时可见</span>
+<span class="token comment" spellcheck="true">//VISIBILITY_SYSTEM          0x02      预计在运行时可见，但仅对基本系统（而不是常规用户代码）可见</span>
+<span class="token keyword">struct</span> encoded_array_item
+<span class="token punctuation">{</span>
+    encoded_array value<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//用于表示编码数组值的字节，采用上文的“encoded_value 编码”下的“encoded_array 格式”指定的格式。</span>
+<span class="token punctuation">}</span>
+
+
+<span class="token keyword">struct</span> hiddenapi_class_data_item
+<span class="token punctuation">{</span>
+    unit size<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//该区段的总大小</span>
+    unit<span class="token punctuation">[</span><span class="token punctuation">]</span> offsets<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//由 class_idx 编入索引的偏移量数组。索引 class_idx 中的零数组意味着此 class_idx 没有任何数据，或者所有隐藏 API 标记均为零。否则，数组条目为非零值，并且包含从该区段开头到此 class_idx 的隐藏 API 标记数组的偏移量。</span>
+    bleb128<span class="token punctuation">[</span><span class="token punctuation">]</span> flags<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//每个类的隐藏 API 标记的级联数组。可能的标记值如下表所述。标记按照字段的相同编码顺序进行编码，且方法在类数据中编码。</span>
+<span class="token punctuation">}</span>
+
+限制标记类型：
+名称                      值            说明
+whitelist                <span class="token number">0</span>            此列表中的接口已在 Android 框架软件包索引中正式记录，它们是受支持的接口，您可以自由使用。
+greylist                <span class="token number">1</span>    包含可以使用的非 SDK 接口的列表（无论应用的目标 API 级别是什么）。
+blacklist                <span class="token number">2</span>    包含不能使用的非 SDK 接口的列表（无论应用的目标 API 级别是什么）。访问其中任何一个接口都会导致运行时错误。
+greylist‑max‑o    <span class="token number">3</span>    包含可用于 Android <span class="token number">8</span><span class="token punctuation">.</span>x 及下文的非 SDK 接口列表（除非这些接口受到限制）。
+greylist‑max‑p    <span class="token number">4</span>    包含可用于 Android <span class="token number">9</span><span class="token punctuation">.</span>x 的非 SDK 接口列表（除非这些接口受到限制）。
+greylist‑max‑q    <span class="token number">5</span>    包含可用于 Android <span class="token number">10</span><span class="token punctuation">.</span>x 的非 SDK 接口列表（除非这些接口受到限制）。
+</code></pre>
+<p>如果需要可以参考google的官方文档(需要翻墙)</p>
+<p><a href="https://source.android.com/devices/tech/dalvik/dex-format.html" target="_blank" rel="noopener">https://source.android.com/devices/tech/dalvik/dex-format.html</a></p>
+<h6 id="class-def-item中的class-data-off"><a href="#class-def-item中的class-data-off" class="headerlink" title="class_def_item中的class_data_off"></a>class_def_item中的class_data_off</h6><p>指向 data 区里的 class_data_item 结构，class_data_item 里存放着本 class 使用到的各种数据，下面是 class_data_item 的结构 </p>
+<pre class=" language-c"><code class="language-c">uleb128 <span class="token keyword">unsigned</span> little<span class="token operator">-</span>endian base <span class="token number">128</span> 
+<span class="token keyword">struct</span> class_data_item
+<span class="token punctuation">{</span>
+    uleb128 static_fields_size<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//静态成员变量的个数</span>
+    uleb128 instance_fields_size<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//实例成员变量个数</span>
+    uleb128 direct_methods_size<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//直接函数个数</span>
+    uleb128 virtual_methods_size<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 虚函数个数</span>
+    encoded_field  static_fields<span class="token punctuation">[</span>static_fields_size<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    encoded_field  instance_fields<span class="token punctuation">[</span>instance_fields_size<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    encoded_method direct_methods<span class="token punctuation">[</span>direct_methods_size<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    encoded_method virtual_methods<span class="token punctuation">[</span>virtual_methods_size<span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">struct</span> encoded_field
+<span class="token punctuation">{</span>
+    uleb128 filed_idx_diff<span class="token punctuation">;</span> 
+    uleb128 access_flags<span class="token punctuation">;</span>  
+<span class="token punctuation">}</span>
+<span class="token keyword">struct</span> encoded_method
+<span class="token punctuation">{</span>
+    uleb128 method_idx_diff<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//前缀 methd_idx 表示它的值是 method_ids 的一个 index ，后缀 _diff 表示它是于另 外一个 method_idx 的一个差值 ，就是相对于 encodeed_method [] 数组里上一个元素的 method_idx 的差值 。 其实 encoded_filed - > field_idx_diff 表示的也是相同的意思 ，只是编译出来的 Hello.dex 文件里没有使用到 class filed 所以没有仔细讲 ，详细的参考 https://source.android.com/devices/tech/dalvik/dex-format 官网文档。</span>
+    uleb128 access_flags<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//访问权限，比如 public、private、static、final 等</span>
+    uleb128 code_off<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//一个指向 data 区的偏移地址，目标是本 method 的代码实现。被指向的结构是code_item，有近 10 项元素</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">struct</span> code_item 
+<span class="token punctuation">{</span>
+    ushort                         registers_size<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//本段代码使用到的寄存器数目</span>
+    ushort                         ins_size<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//method 传入参数的数目</span>
+    ushort                         outs_size<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//本段代码调用其它 method 时需要的参数个数</span>
+    ushort                         tries_size<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//try_item 结构的个数</span>
+    uint                         debug_info_off<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//偏移地址，指向本段代码的 debug 信息存放位置，是一个 debug_info_item 结构</span>
+    uint                         insns_size<span class="token punctuation">;</span>
+    ushort                         insns <span class="token punctuation">[</span>insns_size<span class="token punctuation">]</span><span class="token punctuation">;</span> 
+    ushort                         paddding<span class="token punctuation">;</span>             <span class="token comment" spellcheck="true">// optional</span>
+    try_item                     tries <span class="token punctuation">[</span>tyies_size<span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// optional</span>
+    encoded_catch_handler_list  handlers<span class="token punctuation">;</span>             <span class="token comment" spellcheck="true">// optional</span>
+<span class="token punctuation">}</span>
+
+
+<span class="token keyword">struct</span> debug_info_off
+<span class="token punctuation">{</span>
+    uleb128 line_start<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//状态机的 line 寄存器的初始值。不表示实际的位置条目</span>
+    uleb128 parameters_size<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//已编码的参数名称的数量。每个方法参数都应该有一个名称，但不包括实例方法的 this（如果有）</span>
+    uleb128p1<span class="token punctuation">[</span>parameters_size<span class="token punctuation">]</span> paramer_names<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//方法参数名称的字符串索引。NO_INDEX 的编码值表示该关联参数没有可用的名称。该类型描述符和签名隐含在方法描述符和签名中</span>
+<span class="token punctuation">}</span></code></pre>
+<h6 id="class-def-item中的static-value-off"><a href="#class-def-item中的static-value-off" class="headerlink" title="class_def_item中的static_value_off"></a>class_def_item中的static_value_off</h6><pre class=" language-c"><code class="language-c">uleb128  <span class="token keyword">unsigned</span> LEB128<span class="token punctuation">,</span> valriable length
+<span class="token keyword">struct</span> encoded_array_item
+<span class="token punctuation">{</span>
+    encoded_array value<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//表示encoded_value 个数</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">struct</span> encoded_array
+<span class="token punctuation">{</span>    
+    uleb128 size<span class="token punctuation">;</span>
+    encoded_value values<span class="token punctuation">[</span>size<span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<h5 id="map-list"><a href="#map-list" class="headerlink" title="map_list"></a>map_list</h5><p>我们在前面已经提到过这个map_list,他里面的内容是保存header中对应的描述,里面描述的更加全面，具体的结构如下</p>
+<p>map_list 里先用一个 uint 描述后面有 size 个 map_item，后续就是对应的 size 个 map_item 描述。 map_item 结构有 4 个元素: type 表示该 map_item 的类型，Dalvik Executable Format 里 Type Code 的定义; size 表示再细分此 item，该类型的个数;offset 是第一个元素的针对文件初始位置的偏移量; unuse 是用对齐字节的，无实际用处。</p>
+<pre class=" language-c"><code class="language-c">ushort <span class="token number">16</span><span class="token operator">-</span>bit <span class="token keyword">unsigned</span> <span class="token keyword">int</span><span class="token punctuation">,</span> little<span class="token operator">-</span>endian
+uint   <span class="token number">32</span><span class="token operator">-</span>bit <span class="token keyword">unsigned</span> <span class="token keyword">int</span><span class="token punctuation">,</span> little<span class="token operator">-</span>endian
+<span class="token keyword">struct</span> map_list 
+<span class="token punctuation">{</span>
+    uint     size<span class="token punctuation">;</span>
+    map_item list <span class="token punctuation">[</span>size<span class="token punctuation">]</span><span class="token punctuation">;</span> 
+<span class="token punctuation">}</span>
+<span class="token keyword">struct</span> map_item 
+<span class="token punctuation">{</span>
+    ushort type<span class="token punctuation">;</span> 
+    ushort unuse<span class="token punctuation">;</span> 
+    uint   size<span class="token punctuation">;</span> 
+    uint   offset<span class="token punctuation">;</span>
+<span class="token punctuation">}</span> </code></pre>
+<h5 id="leb128编码"><a href="#leb128编码" class="headerlink" title="leb128编码"></a>leb128编码</h5><p>Dalvik使用readUnsignedLeb128函数来尝试读取一个leb128编码的数值（代码位于dalvik\libdex\Leb128.h中）,那么什么是uleb128呢？</p>
+<p>LEB128即”Little-Endian Base 128”，基于128的小端序编码格式，是对任意有符号或者无符号整型数的可变长度的编码。用LEB128编码的正数，会根据数字的大小改变所占字节数。在android的.dex文件中，他只用来编码32bits的整型数。</p>
+<p><img src="https://zhanweisun.github.io/image/uleb128.png?raw=true" alt="img"></p>
+<p>例子</p>
+<pre><code>LEB128编码的0x02b0 ---&gt; 转换后的数字0x0130
+转换过程：
+0x02b0 ---&gt; 0000 0010 1011 0000 --&gt;去除最高位--&gt; 000 0010 011 0000 --&gt;按4bits重排 --&gt; 00 0001 0011 0000 --&gt; 0x130</code></pre><pre class=" language-c"><code class="language-c"><span class="token comment" spellcheck="true">/*
+ * Reads an unsigned LEB128 value, updating the given pointer to point
+ * just past the end of the read value. This function tolerates
+ * non-zero high-order bits in the fifth encoded byte.
+ */</span>
+DEX_INLINE <span class="token keyword">int</span> <span class="token function">readSignedLeb128</span><span class="token punctuation">(</span><span class="token keyword">const</span> u1<span class="token operator">*</span><span class="token operator">*</span> pStream<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> u1<span class="token operator">*</span> ptr <span class="token operator">=</span> <span class="token operator">*</span>pStream<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> result <span class="token operator">=</span> <span class="token operator">*</span><span class="token punctuation">(</span>ptr<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>result <span class="token operator">&lt;=</span> <span class="token number">0x7f</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        result <span class="token operator">=</span> <span class="token punctuation">(</span>result <span class="token operator">&lt;&lt;</span> <span class="token number">25</span><span class="token punctuation">)</span> <span class="token operator">>></span> <span class="token number">25</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+        <span class="token keyword">int</span> cur <span class="token operator">=</span> <span class="token operator">*</span><span class="token punctuation">(</span>ptr<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        result <span class="token operator">=</span> <span class="token punctuation">(</span>result <span class="token operator">&amp;</span> <span class="token number">0x7f</span><span class="token punctuation">)</span> <span class="token operator">|</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>cur <span class="token operator">&amp;</span> <span class="token number">0x7f</span><span class="token punctuation">)</span> <span class="token operator">&lt;&lt;</span> <span class="token number">7</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>cur <span class="token operator">&lt;=</span> <span class="token number">0x7f</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            result <span class="token operator">=</span> <span class="token punctuation">(</span>result <span class="token operator">&lt;&lt;</span> <span class="token number">18</span><span class="token punctuation">)</span> <span class="token operator">>></span> <span class="token number">18</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+            cur <span class="token operator">=</span> <span class="token operator">*</span><span class="token punctuation">(</span>ptr<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            result <span class="token operator">|</span><span class="token operator">=</span> <span class="token punctuation">(</span>cur <span class="token operator">&amp;</span> <span class="token number">0x7f</span><span class="token punctuation">)</span> <span class="token operator">&lt;&lt;</span> <span class="token number">14</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>cur <span class="token operator">&lt;=</span> <span class="token number">0x7f</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                result <span class="token operator">=</span> <span class="token punctuation">(</span>result <span class="token operator">&lt;&lt;</span> <span class="token number">11</span><span class="token punctuation">)</span> <span class="token operator">>></span> <span class="token number">11</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+                cur <span class="token operator">=</span> <span class="token operator">*</span><span class="token punctuation">(</span>ptr<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                result <span class="token operator">|</span><span class="token operator">=</span> <span class="token punctuation">(</span>cur <span class="token operator">&amp;</span> <span class="token number">0x7f</span><span class="token punctuation">)</span> <span class="token operator">&lt;&lt;</span> <span class="token number">21</span><span class="token punctuation">;</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>cur <span class="token operator">&lt;=</span> <span class="token number">0x7f</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    result <span class="token operator">=</span> <span class="token punctuation">(</span>result <span class="token operator">&lt;&lt;</span> <span class="token number">4</span><span class="token punctuation">)</span> <span class="token operator">>></span> <span class="token number">4</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+                    cur <span class="token operator">=</span> <span class="token operator">*</span><span class="token punctuation">(</span>ptr<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    result <span class="token operator">|</span><span class="token operator">=</span> cur <span class="token operator">&lt;&lt;</span> <span class="token number">28</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token operator">*</span>pStream <span class="token operator">=</span> ptr<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> result<span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>对应的Kotlin代码，我自己写的功能，请大家参考</p>
+<pre class=" language-kotlin"><code class="language-kotlin"><span class="token keyword">private</span> <span class="token keyword">fun</span> <span class="token function">decodeUleb128</span><span class="token punctuation">(</span><span class="token keyword">data</span><span class="token operator">:</span> ByteArray<span class="token punctuation">)</span><span class="token operator">:</span> Long <span class="token punctuation">{</span>
+    <span class="token keyword">var</span> result<span class="token operator">:</span> Long <span class="token operator">=</span> <span class="token number">0L</span>
+    <span class="token label symbol">parserByte@</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>index <span class="token keyword">in</span> <span class="token keyword">data</span><span class="token punctuation">.</span>indices<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">val</span> cur <span class="token operator">=</span> <span class="token keyword">data</span><span class="token punctuation">[</span>index<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">toUInt</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">when</span> <span class="token punctuation">(</span>index<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token number">0</span> <span class="token operator">-></span> <span class="token punctuation">{</span>
+                result <span class="token operator">=</span> cur<span class="token punctuation">.</span><span class="token function">toLong</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>cur <span class="token operator">&lt;=</span> 127u<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token comment" spellcheck="true">//就一个byte，直接赋值，跳出循环</span>
+                    <span class="token keyword">break</span><span class="token label symbol">@parserByte</span>
+                <span class="token punctuation">}</span>
+                <span class="token comment" spellcheck="true">//最高位为1,继续保存值到result里面，继续下一次循环</span>
+            <span class="token punctuation">}</span>
+            <span class="token number">1</span> <span class="token operator">-></span> <span class="token punctuation">{</span>
+                <span class="token comment" spellcheck="true">//拼接数据,这里对result的值进行and操作，去掉高位数据</span>
+                <span class="token keyword">val</span> lowVal <span class="token operator">=</span> <span class="token punctuation">(</span>result <span class="token operator">and</span> <span class="token number">0x7f</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toInt</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token keyword">val</span> hiVal <span class="token operator">=</span> <span class="token punctuation">(</span>cur <span class="token operator">and</span> 127u<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toInt</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">shl</span> <span class="token number">7</span>
+                result <span class="token operator">=</span> <span class="token punctuation">(</span>lowVal <span class="token operator">or</span> hiVal<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toLong</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>cur <span class="token operator">&lt;=</span> 127u<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token comment" spellcheck="true">//如果最高位不是0,没有数据了，直接返回</span>
+                    <span class="token keyword">break</span><span class="token label symbol">@parserByte</span>
+                <span class="token punctuation">}</span>
+                <span class="token comment" spellcheck="true">//什么都不做，等着下一次循环，继续操作</span>
+            <span class="token punctuation">}</span>
+            <span class="token number">2</span> <span class="token operator">-></span> <span class="token punctuation">{</span>
+                <span class="token keyword">val</span> hiVal <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>cur <span class="token operator">and</span> 127u<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toInt</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">shl</span> <span class="token number">14</span><span class="token punctuation">)</span>
+                result <span class="token operator">=</span> result <span class="token operator">or</span> hiVal<span class="token punctuation">.</span><span class="token function">toLong</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>cur <span class="token operator">&lt;=</span> 127u<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token keyword">break</span><span class="token label symbol">@parserByte</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+            <span class="token number">3</span> <span class="token operator">-></span> <span class="token punctuation">{</span>
+                <span class="token keyword">val</span> hiVal <span class="token operator">=</span> <span class="token punctuation">(</span>cur <span class="token operator">and</span> 127u<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toInt</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">shl</span> <span class="token number">21</span>
+                result <span class="token operator">=</span> result <span class="token operator">or</span> hiVal<span class="token punctuation">.</span><span class="token function">toLong</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>cur <span class="token operator">&lt;=</span> 127u<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token keyword">break</span><span class="token label symbol">@parserByte</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+            <span class="token number">4</span> <span class="token operator">-></span> <span class="token punctuation">{</span>
+                <span class="token keyword">val</span> hiVal <span class="token operator">=</span> cur<span class="token punctuation">.</span><span class="token function">toInt</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">shl</span> <span class="token number">28</span>
+                result <span class="token operator">=</span> result <span class="token operator">or</span> hiVal<span class="token punctuation">.</span><span class="token function">toLong</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>cur <span class="token operator">&lt;=</span> 127u<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token keyword">break</span><span class="token label symbol">@parserByte</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> result
+<span class="token punctuation">}</span></code></pre>
+
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://zhanweisun.github.io" rel="external nofollow noreferrer">孙老师</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://zhanweisun.github.io/2019/12/28/dex-wen-jian-jie-gou-yu-jie-xi/">http://zhanweisun.github.io/2019/12/28/dex-wen-jian-jie-gou-yu-jie-xi/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="http://zhanweisun.github.io" target="_blank">孙老师</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/Dex/">
+                                    <span class="chip bg-color">Dex</span>
+                                </a>
+                            
+                                <a href="/tags/%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84/">
+                                    <span class="chip bg-color">文件结构</span>
+                                </a>
+                            
+                                <a href="/tags/%E4%BA%8C%E8%BF%9B%E5%88%B6/">
+                                    <span class="chip bg-color">二进制</span>
+                                </a>
+                            
+                                <a href="/tags/%E8%A7%A3%E6%9E%90/">
+                                    <span class="chip bg-color">解析</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    
+    <div class="social-share" data-sites="qq,qzone,wechat,weibo,douban" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2019/12/29/get-app-list/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/21.jpg" class="responsive-img" alt="无需权限获取应用程序列表">
+                        
+                        <span class="card-title">无需权限获取应用程序列表</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            无需权限获取应用程序列表最近在研究反编译的时候发现了系统的一种漏洞方式获取应用程序信息,这个可以无需任何权限,用户无任何感知的获取全部应用程序列表,这对于一些特别需要知道用户手机内是否安装了某些特定应用的的人来说真的是太好了.
+经过我自己的
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2019-12-29
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            孙老师
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/android/">
+                        <span class="chip bg-color">android</span>
+                    </a>
+                    
+                    <a href="/tags/%E5%BA%94%E7%94%A8%E5%88%97%E8%A1%A8/">
+                        <span class="chip bg-color">应用列表</span>
+                    </a>
+                    
+                    <a href="/tags/%E6%9D%83%E9%99%90/">
+                        <span class="chip bg-color">权限</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2019/12/14/android-dai-ma-you-hua-yu-hun-yao/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/16.jpg" class="responsive-img" alt="Android 代码优化与混淆">
+                        
+                        <span class="card-title">Android 代码优化与混淆</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            Android 代码优化与混淆1.android代码优化andriod gradle 插件3.4.0版本以上，不在使用ProGurad执行编译代码优化工作，转而使用R8编译器一起处理代码
+1) 压缩代码，检测依赖库，安全的移除未使用的类，字
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2019-12-14
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            孙老师
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/android/">
+                        <span class="chip bg-color">android</span>
+                    </a>
+                    
+                    <a href="/tags/%E6%B7%B7%E6%B7%86/">
+                        <span class="chip bg-color">混淆</span>
+                    </a>
+                    
+                    <a href="/tags/R8/">
+                        <span class="chip bg-color">R8</span>
+                    </a>
+                    
+                    <a href="/tags/%E4%BC%98%E5%8C%96/">
+                        <span class="chip bg-color">优化</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+    
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+    <footer class="page-footer bg-color">
+    <div class="container row center-align">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            <span id="year">年份</span>
+            <a href="http://zhanweisun.github.io" target="_blank">孙老师</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+            
+            <span id="sitetime">载入运行时间...</span>
+            <script>
+                function siteTime() {
+                    window.setTimeout("siteTime()", 1000);
+                    var seconds = 1000;
+                    var minutes = seconds * 60;
+                    var hours = minutes * 60;
+                    var days = hours * 24;
+                    var years = days * 365;
+                    var today = new Date();
+                    var startYear = "2019";
+                    var startMonth = "12";
+                    var startDate = "4";
+                    var startHour = "18";
+                    var startMinute = "0";
+                    var startSecond = "0";
+                    var todayYear = today.getFullYear();
+                    var todayMonth = today.getMonth() + 1;
+                    var todayDate = today.getDate();
+                    var todayHour = today.getHours();
+                    var todayMinute = today.getMinutes();
+                    var todaySecond = today.getSeconds();
+                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
+                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
+                    var diff = t2 - t1;
+                    var diffYears = Math.floor(diff / years);
+                    var diffDays = Math.floor((diff / days) - diffYears * 365);
+                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
+                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
+                        minutes);
+                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
+                        diffMinutes * minutes) / seconds);
+                    if (startYear == todayYear) {
+                        document.getElementById("year").innerHTML = todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已运行 " + diffDays + " 天 " + diffHours +
+                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    } else {
+                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已运行 " + diffYears + " 年 " + diffDays +
+                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    }
+                }
+                setInterval(siteTime, 1000);
+            </script>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/zhanweisun" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:847491180@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=847491180" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 847491180" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+
+
+
+
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+$(function () {
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+});
+</script>
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <script type="text/javascript" src="/libs/background/ribbon-dynamic.js" async="async"></script>
+    
+    
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>

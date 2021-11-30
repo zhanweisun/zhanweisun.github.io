@@ -1,0 +1,1420 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="ARM汇编学习(一), 孙老师">
+    <meta name="description" content="title: ARM汇编学习(一)date: 2020-03-01 17:22:07tags: 
+
+ARM汇编
+寄存器
+指令
+
+ARM汇编学习(一)ARM处理器基础之寻址方式1.寄存器寻址寄存器寻址，简单来说就是把ARM寄存器内的值直接赋给">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>ARM汇编学习(一) | 孙老师</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    
+    <script src="/libs/jquery/jquery.min.js"></script>
+    
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper head-container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">孙老师</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">孙老师</div>
+        <div class="logo-desc">
+            
+            Never really desperate, only the lost of the soul.
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/zhanweisun" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/zhanweisun" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/4.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <div class="description center-align post-title">
+                        ARM汇编学习(一)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        height: calc(100vh - 250px);
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                          <div class="article-tag">
+                            <span class="chip bg-color">无标签</span>
+                          </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2020-02-28
+                </div>
+                
+
+                
+
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    14 分
+                </div>
+                
+				
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+            
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <p>title: ARM汇编学习(一)<br>date: 2020-03-01 17:22:07<br>tags: </p>
+<ul>
+<li>ARM汇编</li>
+<li>寄存器</li>
+<li>指令</li>
+</ul>
+<h1 id="ARM汇编学习-一"><a href="#ARM汇编学习-一" class="headerlink" title="ARM汇编学习(一)"></a>ARM汇编学习(一)</h1><h2 id="ARM处理器基础之寻址方式"><a href="#ARM处理器基础之寻址方式" class="headerlink" title="ARM处理器基础之寻址方式"></a>ARM处理器基础之寻址方式</h2><h5 id="1-寄存器寻址"><a href="#1-寄存器寻址" class="headerlink" title="1.寄存器寻址"></a>1.寄存器寻址</h5><pre><code>寄存器寻址，简单来说就是把ARM寄存器内的值直接赋给另外一个ARM寄存器，是一种非常常见的寻址方式，有点类似于我们编程中，把变量A的值直接赋给B的操作。
+var B=A;
+
+例子如下
+MOV  R1,R2  ;把寄存器R2里面的值赋值个R1
+SUB  R0,R1,R2 ;使用寄存器R1减去R2 结果赋值给R0寄存器</code></pre><h5 id="2-立即寻址"><a href="#2-立即寻址" class="headerlink" title="2.立即寻址"></a>2.立即寻址</h5><pre><code>立即寻址就是直接把值赋给对应的变量（寄存器）,这和我们C语言里面给变量赋一个具体的数值很像
+var A = 10;
+
+例子如下
+SUBS R0,R0,#1 ;R0-1 -&gt; R0 寄存器R0-1的值保存到R0中</code></pre><h5 id="3-寄存器偏移寻址"><a href="#3-寄存器偏移寻址" class="headerlink" title="3.寄存器偏移寻址"></a>3.寄存器偏移寻址</h5><pre><code>寄存器偏移寻址是ARM指令集特有的寻址方式，当第二个操作数是寄存器偏移方式时,第二个寄存器操作数在与第一个操作数结合之前，选择进行位移操作
+这样的操作其实类似于我们在C语言里面，先把变量进行位移操作,然后再赋值给其他
+var A= B&gt;&gt;1;
+
+例子如下
+MOV R0,R2,LSL #3  ;R2的值左移3位，结果放入R0，即R0=R2*8
+ANDS R1,R1,R2,LSL R3  ;R2的值左移3位，然后和R1相与操作，结果放入R1</code></pre><pre><code>寄存器寻址可以使用的位移操作符如下
+LSL:逻辑左移，寄存器中低端空出的位置补0
+LSR:逻辑右移，寄存器中高端空出的位置补0
+ASR:算数右移，位移过程中，符号位保持不变，如果源操作数为正数，则高位空出补0，否则补1
+ROR:循环右移，由字的低端移出的位填入字的高端空位
+RRX:带扩展的循环右移，操作数右移一位，高端空出的位用原C标志值填充</code></pre><p><img src="https://zhanweisun.github.io/image/%E4%BD%8D%E7%A7%BB%E6%93%8D%E4%BD%9C%E5%9B%BE.png" alt="位移操作图"></p>
+<h5 id="4-寄存器间接寻址"><a href="#4-寄存器间接寻址" class="headerlink" title="4,寄存器间接寻址"></a>4,寄存器间接寻址</h5><pre><code>这种寻址方式，就是取第二个参数寄存器编号里面的值，然后赋值给第一个寄存器
+类似于C语言中的
+var a=*b;
+
+例子程序
+LDR R1,[R2]  ;将R2中的数值作为地址，去除此地址中的数据保存在R1中
+SWP R1,R1,[R2] ;将R2中的数值作为地址，取出此地址中的数值与R1中的值交换</code></pre><h5 id="5-基址寻址"><a href="#5-基址寻址" class="headerlink" title="5.基址寻址"></a>5.基址寻址</h5><pre><code>将基址寄存器的内容与指令中给出的偏移量相加，获取到有效的地址，一般情况，基址寻址用于访问基址附近的存贮单元，经常用于查表，数组操作等。
+此操作类似于寄存器寻址，只是额外会再加上一个偏移地址
+
+例子程序
+LDR R2,[R3,#0x0F] ;将R3中的数值加0x0F作为地址，去除地址的数值保存到R2中</code></pre><h5 id="6-多寄存器寻址"><a href="#6-多寄存器寻址" class="headerlink" title="6.多寄存器寻址"></a>6.多寄存器寻址</h5><pre><code>多寄存器寻址就是一次可以传送几个几寄存器的值，允许一条指令传送16个寄存器的任何子集或者所有寄存器
+
+例子程序
+LDMIA R1!,{R2-R7,R12} ;将R1短语中的数据读出到R2-R7，R12，R1自动加1
+STMIA R0!,{R3-R6,R10} ;将R3-R6，R10中的数据保存到R0指向的地址，R0自动加1</code></pre><h5 id="7-堆栈寻址"><a href="#7-堆栈寻址" class="headerlink" title="7.堆栈寻址"></a>7.堆栈寻址</h5><pre><code>堆栈寻址使用专门的寄存器，堆栈指针指向一块存储区域，指针指向的存储单元就是堆栈顶端，存储器堆栈分为两种，
+
+向上生长：向高地址方向生长，称之为递增堆栈
+
+向下生长：向低地址方向生长，称之为递减堆栈
+
+堆栈指针指向最后压入的堆栈的有效数据项，成为满堆栈，堆栈指针指向下一个要放入的空位置，成为空堆栈，这样就有4种类型的堆栈表示递增和递减的满堆栈和空堆栈</code></pre><pre><code>满递增:堆栈通过增大存储器的地址向上增长，堆栈指针指向内含有效数据项的最高地址。例如指令 LDMFA，STMFA等.</code></pre><pre><code>空递增:堆栈通过增大存储器的地址向上增长，堆栈指针指向堆栈上的第一个空位置，例如指令 LDMEA,STMFA等.</code></pre><pre><code>满递减:堆栈通过减小存储器的地址向下增长，堆栈指针指向内含有效数据项的最低地址。例如指令 LDMFD，STMFD等.</code></pre><pre><code>空递减:堆栈通过减小存储器的地址向下增长，堆栈指针指向堆栈下的第一个空位置。例如指令 LDMFD，STMFD等.</code></pre><p>STMFD  SP!,{R1-R7,LR} ;将R1-R7，LR入栈，满递减堆栈</p>
+<h5 id="8-块拷贝寻址"><a href="#8-块拷贝寻址" class="headerlink" title="8.块拷贝寻址"></a>8.块拷贝寻址</h5><pre><code>多寄存器传送指令用于一块数据从存储器的某一位置拷贝到另一位置。
+有点类似多寄存器寻址
+例子代码
+STMIA  R0!,{R1,R7} ;将R1-R7的数据保存到存储器，存储器地址保存在R0中，R0递增</code></pre><h5 id="9-相对寻址"><a href="#9-相对寻址" class="headerlink" title="9.相对寻址"></a>9.相对寻址</h5><pre><code>相对寻址是基址寻址的另外一个变种，有程序计数器PC提供基准地址，指令中的地址码字段作为偏移量，两者相加后得到有效地址
+例子代码
+BL ROUTE1  ;调用到ROUTE1子程序
+BEQ LOOP  ；条件跳转指令</code></pre><h2 id="ARM指令集"><a href="#ARM指令集" class="headerlink" title="ARM指令集"></a>ARM指令集</h2><h5 id="1-条件码"><a href="#1-条件码" class="headerlink" title="1.条件码"></a>1.条件码</h5><table>
+<thead>
+<tr>
+<th>条件码助记符</th>
+<th>影响标志位</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>EQ</td>
+<td>Z==1</td>
+<td>相等</td>
+</tr>
+<tr>
+<td>NE</td>
+<td>Z==0</td>
+<td>不相等</td>
+</tr>
+<tr>
+<td>CS/HS</td>
+<td>C=1</td>
+<td>无符号数大于或等于</td>
+</tr>
+<tr>
+<td>CC/L0</td>
+<td>C=0</td>
+<td>无符号数小于</td>
+</tr>
+<tr>
+<td>MI</td>
+<td>N=1</td>
+<td>负数</td>
+</tr>
+<tr>
+<td>PL</td>
+<td>N=0</td>
+<td>正数或零</td>
+</tr>
+<tr>
+<td>VS</td>
+<td>V=1</td>
+<td>溢出</td>
+</tr>
+<tr>
+<td>VC</td>
+<td>V=0</td>
+<td>没有溢出</td>
+</tr>
+<tr>
+<td>HI</td>
+<td>C=1,Z=0</td>
+<td>无符号数大于</td>
+</tr>
+<tr>
+<td>LS</td>
+<td>C=0,Z=1</td>
+<td>无符号书小于或等于</td>
+</tr>
+<tr>
+<td>GE</td>
+<td>N=V</td>
+<td>有符号数大于或等于</td>
+</tr>
+<tr>
+<td>LT</td>
+<td>N!=V</td>
+<td>有符号数小于</td>
+</tr>
+<tr>
+<td>GT</td>
+<td>Z=0,N=V</td>
+<td>有符号数大于</td>
+</tr>
+<tr>
+<td>LE</td>
+<td>Z=1,N!=V</td>
+<td>有符号数小于或等于</td>
+</tr>
+<tr>
+<td>AL</td>
+<td>Any</td>
+<td>无条件执行</td>
+</tr>
+</tbody></table>
+<pre><code>条件码应用举例
+C语言代码
+if (a&gt;b)
+{
+  a++;
+}
+else
+{
+  b++;
+}
+对应的ARM指令,其中R0为a,R1为b
+CMP      R0, R1        ;R0与R1比较
+ADDHI    R0, R0, #1    ;如果R0&gt;R1,R0=R0+1
+ADDLS    R1, R1, #1    ;否则R0&lt;R1,R1=R1+1
+
+if ((a!=10)&amp;&amp;(b!=20))
+{
+      a=a+b;
+}
+对应ARM指令,其中R0为a,R1为b
+CMP    R0,#10    ;比较R0是否为10
+CMPNE  R1,#20    ;如果R0不为10,则比较R1是否为20
+ADDNE  R0,R0,R1  ;如果R0不为10,并且R1不为20,指令执行R0=R0+R1</code></pre><h5 id="2-存储器访问指令"><a href="#2-存储器访问指令" class="headerlink" title="2.存储器访问指令"></a>2.存储器访问指令</h5><table>
+<thead>
+<tr>
+<th>助记符</th>
+<th>说明</th>
+<th>操作</th>
+<th>条件码位置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>LDR  Rd,addressing</td>
+<td>加载字数据</td>
+<td>Rd&lt;-[addressing],addressing 索引</td>
+<td>LDR {cond}</td>
+</tr>
+<tr>
+<td>LDRB  Rd,addressing</td>
+<td>加载无符号字节数据</td>
+<td>Rd&lt;-[addressing],addressing 索引</td>
+<td>LDR {cond} B</td>
+</tr>
+<tr>
+<td>LDRT  Rd,addressing</td>
+<td>以用户模式加载字数据</td>
+<td>Rd&lt;-[addressing],addressing 索引</td>
+<td>LDR {cond} T</td>
+</tr>
+<tr>
+<td>LDRBT  Rd,addressing</td>
+<td>以用户模式加载无符号字数据</td>
+<td>Rd&lt;-[addressing],addressing 索引</td>
+<td>LDR {cond} BT</td>
+</tr>
+<tr>
+<td>LDRH  Rd,addressing</td>
+<td>加载无符号半字数据</td>
+<td>Rd&lt;-[addressing],addressing 索引</td>
+<td>LDR {cond} H</td>
+</tr>
+<tr>
+<td>LDRSB  Rd,addressing</td>
+<td>加载有符字节数据</td>
+<td>Rd&lt;-[addressing],addressing 索引</td>
+<td>LDR {cond} SB</td>
+</tr>
+<tr>
+<td>LDRSH  Rd,addressing</td>
+<td>STRH Rd,addressing</td>
+<td>Rd&lt;-[addressing],addressing 索引</td>
+<td>LDR {cond} SH</td>
+</tr>
+<tr>
+<td>STR Rd,addressing</td>
+<td>存储字数据</td>
+<td>[addressing]&lt;-Rd,addressing 索引</td>
+<td>STR {cond}</td>
+</tr>
+<tr>
+<td>STRB  Rd,addressing</td>
+<td>存储字节数据</td>
+<td>[addressing]&lt;-Rd,addressing 索引</td>
+<td>STR {cond} B</td>
+</tr>
+<tr>
+<td>STRT Rd,addressing</td>
+<td>以用户模式存储字数据</td>
+<td>[addressing]&lt;-Rd,addressing 索引</td>
+<td>STR {cond} T</td>
+</tr>
+<tr>
+<td>STRBT Rd,addressing</td>
+<td>以用户模式存储字节数据</td>
+<td>[addressing]&lt;-Rd,addressing 索引</td>
+<td>STR {cond} BT</td>
+</tr>
+<tr>
+<td>STRH Rd,addressing</td>
+<td>存储半字数据</td>
+<td>[addressing]&lt;-Rd,addressing 索引</td>
+<td>STR {cond} H</td>
+</tr>
+<tr>
+<td>LDM {mode} Rn{!},reglist</td>
+<td>批量(寄存器)加载</td>
+<td>reglist &lt;- [Rn … ], Rn 回存等</td>
+<td>LDM {cond} {more}</td>
+</tr>
+<tr>
+<td>STM {mode} Rn{!},reglist</td>
+<td>批量(寄存器)存储</td>
+<td>[Rn … ] &lt;- reglist, Rn 回存等</td>
+<td>STM {cond} {more}</td>
+</tr>
+<tr>
+<td>SWP  Rd,Rm,Rn</td>
+<td>寄存器和存储器字数据交换</td>
+<td>Rd&lt;-[Rd],[Rn]&lt;-[Rm] (Rn &lt;&gt; Rd或Rm)</td>
+<td>SWP {cond}</td>
+</tr>
+<tr>
+<td>SWPB Rd,Rm,Rn</td>
+<td>寄存器和存储器字节数据交换</td>
+<td>Rd&lt;-[Rd],[Rn]&lt;-[Rm] (Rn &lt;&gt; Rd或Rm)</td>
+<td>SWP {cond} B</td>
+</tr>
+</tbody></table>
+<h6 id="LDR和STR"><a href="#LDR和STR" class="headerlink" title="LDR和STR"></a>LDR和STR</h6><pre><code>加载/存储无符号字节指令,使用单一数据传送指令STR和LDR来存储和加载数据
+指令格式如下
+LDR {cond} {T}  Rd,&lt;address&gt;;加载指定地址上的数据(字),放入Rd中
+STR {cond} {T}  Rd,&lt;address&gt;;存储数据(字)到指定地址的存储单元,要存储的数据在Rd中
+LDR {cond}B {T}  Rd,&lt;address&gt;;加载字节数据,放入Rd中,既Rd最低字节有效,高24位清零
+STR {cond}B {T}  Rd,&lt;address&gt;;存储字节数据,要存储的数据在Rd中,最低字节有效
+其中T为可选后缀,若指令中带有T,那么即使处理器是在特权模式下,存储系统也将访问看成是处理器在用户模式下</code></pre><pre><code>立即数
+立即数可以是个无符号数值,这个数据可以加到基址寄存器,也可以从基址寄存器中减去这个数值,指令举例如下:
+LDR R1,[R0,#0x12]; 将R0+0x12地址处的数据独处,保存到R1中,R0的值不变
+LDR R1,[R0] ;将R0地址处的数据读出,保存到R1中,0地址偏移</code></pre><pre><code>寄存器
+寄存器内的数值可以加到基址寄存器,也可以从基址寄存器中减去这个数值,指令举例如下:
+LDR R1,[R0,R2] ;将R0+R2地址的数据读出,保存到R1中(R0值不变)
+LDR R1,[R0,-R2];将R0-R2的地址处的数据读出,保存到R1中,(R0值不变)</code></pre><pre><code>寄存器及位移常数
+寄存器移位后的值可以加到基址寄存器,也可以从基址寄存器中减去这个数值,指令举例如下:
+LDR R1,[R0,R2,LSL #2]  ;将R0+R2*4(R2左移2位)的地址保存到R1中
+LDR R1,[R0,-R2,LSL #2] ;将R0-R2*4(R2左移2位)的地址保存到R1中
+寻址方式的地址计算方法分为加载/存储指令等4种形式
+1.零偏移
+Rn的值作为传送数据的地址,既偏移地址为0
+LDR Rd,[Rn]
+2.前索引偏移
+在数据传送前,将偏移量加到Rn中,其结果作为传送数据的存储地址,若使用后缀!,则结果回写到Rn中,且Rn的值不允许为R15,指令举例如下:
+LDR Rd,[Rn,#0x04]!
+LDR Rd,[Rn,#-0x04]
+3.程序相对偏移
+程序相对偏移是索引行驶的另外一个版本,汇编器由PC寄存器计算偏移量,并将PC寄存器作为Rn生成前索引指令,不能使用后缀&quot;!&quot;,指令举例如下:
+LDR Rd,label ;label 为程序标号,label必须是当前指令的正负4K范围内
+4.后索引偏移
+Rn的值用作传送数据的存储地址,在数据传送后,将偏移量与Rn想家结果回写到Rn中,Rn不允许是R15,指令举例如下:
+LDR Rd,[Rn],#0x04
+地址对准,大多数情况下,必须保证用于32位传送的地址是32位对准的.
+加载/存储字和无符号字节紫菱举例如下:
+LDR R2,[R5]        ;加载R5对应的地址上的数据到R2中
+STR R1,[R0,#0x04]  ;将R1中的数据保存到地址R0+0x04对应的存储单元中,R0不变
+LDRB R3,[R2],#1    ;读取R2地址上的1字节数据并保存到R3中,R3=R2+1
+STRB R6,[R7]       ;读取R6的数据保存到R7指定的地址中,值存储一个字节
+
+加载/存储半字和带符号字节,这类LDR/STR指令可能加载带符号数据,偏移量格式,寻址方式与上面相同,具体指令如下:
+LDR{cond}SB Rd,&lt;address&gt;  ;加载指定地址上的数据(带符号字节),放入Rd中
+LDR{cond}SH Rd,&lt;address&gt;  ;加载指定地址上的数据(带符号字节),放入Rd中
+LDR{cond}H Rd,&lt;address&gt;   ;加载半字数据,放入Rd中,既Rd最低的16位有效,高16位清零
+STR{cond}H Rd,&lt;address&gt;   ;存储半字数据,要存储的数据在Rd,最低16位有效
+说明:带符号位的半字,字加载是指带符号位加载扩展到32位;无符号位半字加载是指令扩展到32位.
+地址对准:对半字传输的地址必须为偶数,非半字对准的半字加载将使Rd内容不可靠,非半字对准的半字存储将使指定的2字节存储内容不可靠
+加载/存储半字和带符号字节指令举例如下:
+LDRSB R1 [R0,R3]   ;将R0+R3地址傻姑娘的字节数据读取到R1,高24位用符号位扩展
+LDRSH R1,[R9]      ;将R9地址上的半字数据读出到R1,高16位用符号位扩展
+LDRH  R6,[R2],#2   ;将R2地址的半字数据读出到R6,高16位用零扩展
+SHRH  R1,[R0,#2]!  ;将R1的数据存储到R0+2的地址中,只存储低位的2个字节数据R0=R0+2(R0的值增加2)
+LDR/STR指令用于对内存变量的访问,内存缓冲区数据访问,查表,外围部件的控制操作等.</code></pre><h6 id="LDM和STM"><a href="#LDM和STM" class="headerlink" title="LDM和STM"></a>LDM和STM</h6><pre><code>批量加载/存储指令可以实现一组寄存器和一块连续的内存单元之间的传输数据,LDM为加载多个寄存器,STM为存储多个寄存器,允许一条指令传送16个寄存器的任何子集或者所有寄存器,指令格式如下:
+LDM{cond}&lt;模式&gt; Rn{!},reglist{^}
+STM{cond}&lt;模式&gt; Rn{!},reglist{^}
+其中可使用的模式如下:
+1.IA:每次传送后地址加4
+2.IB:每次传送前地址加4
+3.DA:每次传送后地址减4
+4.DB:每次传送前地址减4
+5.FD:满递减堆栈
+6.ED:空递增堆栈
+7.FA:满递增堆栈
+8.EA:空递增堆栈
+其中Rn为基址寄存器,Rn不允许为R15,后缀!表示最后的地址歇会到Rn中,寄存器列表reglist可包含多于一个寄存器或者寄存器范围.使用,分开,如{R1,R2,R6-R9},寄存器排列由小到大排列.&quot;^&quot;后缀不允许在用户模式
+
+举例如下:
+LDMIA R0!,{R3-R9}    ;加载R0指向的地址上的多字数据,保存到R3-R9中,R0值更新
+STMIA R1!,{R3-R9}    ;将R3-R9的数据存储到R1只想的地址上,R1值更新
+STMfD SP!,{R0-R7,LR} ;保存现场,将R0-R7,LR入栈
+LDMFD SP!,{R0-R7,PC} ;恢复现场,异常处理返回</code></pre><p><img src="https://zhanweisun.github.io/image/STMDA.png" alt="STMDA"></p>
+<p><img src="https://zhanweisun.github.io/image/STMDB.png" alt="STMDB"></p>
+<p><img src="https://zhanweisun.github.io/image/STMIA.png" alt="STMIA"></p>
+<p><img src="https://zhanweisun.github.io/image/STMIB.png" alt="STMIB"></p>
+
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://zhanweisun.github.io" rel="external nofollow noreferrer">孙老师</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://zhanweisun.github.io/2020/02/28/arm-hui-bian-xue-xi-yi/">http://zhanweisun.github.io/2020/02/28/arm-hui-bian-xue-xi-yi/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="http://zhanweisun.github.io" target="_blank">孙老师</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            <span class="chip bg-color">无标签</span>
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    
+    <div class="social-share" data-sites="qq,qzone,wechat,weibo,douban" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2020/02/29/shi-yong-ndk-chuang-jian-android-xi-tong-nei-de-ke-zhi-xing-cheng-xu/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="使用ndk创建Android系统内的可执行程序">
+                        
+                        <span class="card-title">使用ndk创建Android系统内的可执行程序</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+title: 使用ndk创建Android系统内的可执行程序date: 2020-02-29 21:08:20tags: 
+
+android
+linux可执行文件
+arm
+C语言
+
+
+使用ndk创建Android系统内的可执行程序我们在用
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2020-02-29
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            孙老师
+                            
+                        </span>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2020/02/12/android-mian-shi-zhi-handler-xiang-guan-xue-xi/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/22.jpg" class="responsive-img" alt="Android面试之Handler相关学习">
+                        
+                        <span class="card-title">Android面试之Handler相关学习</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            ###Android面试之Handler相关学习
+1.Android消息机制之Looper.java源代码学习1). 准备阶段,在子线程中调用Looper.prepare()方法或者在主线程调用Looper.prepareMainLoope
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-02-12
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            孙老师
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/android/">
+                        <span class="chip bg-color">android</span>
+                    </a>
+                    
+                    <a href="/tags/Handler/">
+                        <span class="chip bg-color">Handler</span>
+                    </a>
+                    
+                    <a href="/tags/%E9%9D%A2%E8%AF%95%E9%A2%98/">
+                        <span class="chip bg-color">面试题</span>
+                    </a>
+                    
+                    <a href="/tags/Looper/">
+                        <span class="chip bg-color">Looper</span>
+                    </a>
+                    
+                    <a href="/tags/MessageQueue/">
+                        <span class="chip bg-color">MessageQueue</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+    
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+    <footer class="page-footer bg-color">
+    <div class="container row center-align">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            <span id="year">年份</span>
+            <a href="http://zhanweisun.github.io" target="_blank">孙老师</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+            
+            <span id="sitetime">载入运行时间...</span>
+            <script>
+                function siteTime() {
+                    window.setTimeout("siteTime()", 1000);
+                    var seconds = 1000;
+                    var minutes = seconds * 60;
+                    var hours = minutes * 60;
+                    var days = hours * 24;
+                    var years = days * 365;
+                    var today = new Date();
+                    var startYear = "2019";
+                    var startMonth = "12";
+                    var startDate = "4";
+                    var startHour = "18";
+                    var startMinute = "0";
+                    var startSecond = "0";
+                    var todayYear = today.getFullYear();
+                    var todayMonth = today.getMonth() + 1;
+                    var todayDate = today.getDate();
+                    var todayHour = today.getHours();
+                    var todayMinute = today.getMinutes();
+                    var todaySecond = today.getSeconds();
+                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
+                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
+                    var diff = t2 - t1;
+                    var diffYears = Math.floor(diff / years);
+                    var diffDays = Math.floor((diff / days) - diffYears * 365);
+                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
+                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
+                        minutes);
+                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
+                        diffMinutes * minutes) / seconds);
+                    if (startYear == todayYear) {
+                        document.getElementById("year").innerHTML = todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已运行 " + diffDays + " 天 " + diffHours +
+                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    } else {
+                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已运行 " + diffYears + " 年 " + diffDays +
+                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    }
+                }
+                setInterval(siteTime, 1000);
+            </script>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/zhanweisun" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:847491180@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=847491180" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 847491180" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+
+
+
+
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+$(function () {
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+});
+</script>
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <script type="text/javascript" src="/libs/background/ribbon-dynamic.js" async="async"></script>
+    
+    
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>

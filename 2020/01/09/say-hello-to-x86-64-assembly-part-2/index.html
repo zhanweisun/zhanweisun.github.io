@@ -1,0 +1,1352 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="Say hello to x86_64 Assembly [part 2], 孙老师">
+    <meta name="description" content="翻译原文地址
+Say hello to x86_64 Assembly [part 2]几天前，我写了第一篇博文-介绍x64汇编-Say hello to x64 Assembly [part 1]，出乎我的意料，引起了极大的兴趣：
+Som">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Say hello to x86_64 Assembly [part 2] | 孙老师</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    
+    <script src="/libs/jquery/jquery.min.js"></script>
+    
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper head-container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">孙老师</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">孙老师</div>
+        <div class="logo-desc">
+            
+            Never really desperate, only the lost of the soul.
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/zhanweisun" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/zhanweisun" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/0.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <div class="description center-align post-title">
+                        Say hello to x86_64 Assembly [part 2]
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        height: calc(100vh - 250px);
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/x86/">
+                                <span class="chip bg-color">x86</span>
+                            </a>
+                        
+                            <a href="/tags/x64/">
+                                <span class="chip bg-color">x64</span>
+                            </a>
+                        
+                            <a href="/tags/%E6%B1%87%E7%BC%96/">
+                                <span class="chip bg-color">汇编</span>
+                            </a>
+                        
+                            <a href="/tags/assembly/">
+                                <span class="chip bg-color">assembly</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2020-01-09
+                </div>
+                
+
+                
+
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    16 分
+                </div>
+                
+				
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+            
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <p><a href="https://github.com/0xAX/asm" target="_blank" rel="noopener">翻译原文地址</a></p>
+<h3 id="Say-hello-to-x86-64-Assembly-part-2"><a href="#Say-hello-to-x86-64-Assembly-part-2" class="headerlink" title="Say hello to x86_64 Assembly [part 2]"></a>Say hello to x86_64 Assembly [part 2]</h3><p>几天前，我写了第一篇博文-介绍x64汇编-<a href="">Say hello to x64 Assembly [part 1]</a>，出乎我的意料，引起了极大的兴趣：</p>
+<p>Some days ago I wrote the first blog post - introduction to x64 assembly - Say hello to x64 Assembly [part 1] which to my surprise caused great interest:</p>
+<p>它更激励我去描述我的学习方式。在这段时间里，我从不同的人那里得到了很多反馈。有很多感激的话，但对我来说更重要的是，有很多建议和批评。特别是我想对你的反馈说声谢谢：</p>
+<p>It motivates me even more to describe my way of learning. During this days I got many feedback from different people. There were many grateful words, but what is more important for me, there were many advices and adequate critics. Especially I want to say thank you words for great feedback to:</p>
+<ul>
+<li><a href="http://www.reddit.com/user/Fiennes" target="_blank" rel="noopener">Fiennes</a></li>
+<li><a href="https://disqus.com/by/Universal178/" target="_blank" rel="noopener">Grienders</a></li>
+<li><a href="https://news.ycombinator.com/user?id=nkurz" target="_blank" rel="noopener">nkurz</a></li>
+</ul>
+<p>以及所有参与Reddit和Hacker News讨论的人。有很多意见，第一部分对初学者来说不是很清楚，这就是为什么我决定写更多信息性的文章。所以，让我们从Say hello to x86_64 assembly的第二部分开始。</p>
+<p>And all who took a part in discussion at Reddit and Hacker News. There were many opinions, that first part was a not very clear for absolute beginner, that’s why i decided to write more informative posts. So, let’s start with second part of Say hello to x86_64 assembly.</p>
+<h4 id="术语和概念"><a href="#术语和概念" class="headerlink" title="术语和概念"></a>术语和概念</h4><p>Terminology and Concepts</p>
+<p>正如我在上面写的，我从不同的人那里得到了很多反馈，第一篇文章的某些部分并不是很清楚，这就是为什么让我们从描述一些术语开始，我们将在这一部分和下一部分看到这些术语。</p>
+<p>As i wrote above, I got many feedback from different people that some parts of first post are not clear, that’s why let’s start from description of some terminology that we will see in this and next parts.</p>
+<p>寄存器-寄存器是处理器内部的小批量的存储。处理器的核心是数据处理。处理器可以从内存中获取数据，但运行缓慢。这就是为什么处理器有自己的内部受限制的数据存储集，其名称叫-register(寄存器)。</p>
+<p>Register - register is a small amount of storage inside processor. Main point of processor is data processing. Processor can get data from memory, but it is slow operation. That’s why processor has own internal restricted set of data storage which name is - register.</p>
+<p>小端-我们可以把内存想象成一个大数组。它包含字节。每个地址存储内存“array”的一个元素。每个元素都是一个字节。例如，我们有4个字节：AA 56 AB FF。在小端数据中，最低有效字节的地址最小：</p>
+<p>Little-endian - we can imagine memory as one large array. It contains bytes. Each address stores one element of the memory “array”. Each element is one byte. For example we have 4 bytes: AA 56 AB FF. In little-endian the least significant byte has the smallest address:</p>
+<pre><code>    0 FF
+    1 AB
+    2 56
+    3 AA</code></pre><p>其中0、1、2和3是内存地址。<br>大端-大端以与小端相反的顺序存储字节。所以如果我们有一个56 AB FF字节的序列，它将是：</p>
+<p>where 0,1,2 and 3 are memory addresses.</p>
+<p>Big-endian - big-endian stores bytes in opposite order than little-endian. So if we have AA 56 AB FF bytes sequence it will be:</p>
+<pre><code>    0 AA
+    1 56
+    2 AB
+    3 FF</code></pre><p>Syscall是一个用户级程序要求操作系统为它做一些事情的方式。您可以在这里找到<a href="https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl" target="_blank" rel="noopener">syscall表</a>。<br>堆栈 - 处理器的寄存器数量非常有限,所以堆栈是内存可寻址的特殊寄存器RSP、SS、RIP等组成的一个连续区域。我们将在下一部分对堆栈进行更深入的研究。</p>
+<p>Syscall - is the way a user level program asks the operating system to do something for it. You can find <a href="https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl" target="_blank" rel="noopener">syscall table - here</a>.</p>
+<p>Stack - processor has a very restricted count of registers. So stack is a continuous area of memory addressable special registers RSP,SS,RIP and etc. We will take a closer look on stack in next parts.</p>
+<p>节-每个汇编程序都由节组成。有以下部分：</p>
+<ul>
+<li>data-段用于声明初始化的数据或常量</li>
+</ul>
+<ul>
+<li>bss-段用于声明未初始化的变量</li>
+</ul>
+<ul>
+<li>Text-段用于代码</li>
+</ul>
+<p>Section - every assembly program consists from sections. There are following sections:</p>
+<ul>
+<li><code>data</code> - section is used for declaring initialized data or constants</li>
+<li><code>bss</code> - section is used for declaring non initialized variables</li>
+<li><code>text</code> - section is used for code</li>
+</ul>
+<p>通用寄存器有16个-rax、rbx、rcx、rdx、rbp、rsp、rsi、rdi、r8、r9、r10、r11、r12、r13、r14、r15。当然，它并不是一个完整的与汇编编程相关的术语和概念列表。如果我们在下一篇博文中遇到另一个陌生和不熟悉的词，会有对这些词的解释。</p>
+<p>General-purpose registers - there are 16 general-purpose registers - rax, rbx, rcx, rdx, rbp, rsp, rsi, rdi, r8, r9, r10, r11, r12, r13, r14, r15. Of course, it is not a full list of terms and concepts which related with assembly programming. If we will meet another strange and unfamiliar words in next blog posts, there will be explanation of this words.</p>
+<h4 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h4><p>Data Types</p>
+<p>基本数据类型是字节、字、双字、四字和双四字。一个字节是8比特位，一个字是2个字节位，一个双字是4个字节位，一个四字是8个字节位，一个双四字是16个字节位（128位）。</p>
+<p>The fundamental data types are bytes, words, doublewords, quadwords, and double quadwords. A byte is eight bits, a word is 2 bytes, a doubleword is 4 bytes, a quadword is 8 bytes and a double quadword is 16 bytes (128 bits).</p>
+<p>现在我们只处理整数，所以让我们来看看。整数有两种类型：无符号整数和有符号整数。无符号整数是包含在字节、字、双字和四字中的无符号二进制数。无符号字节整数的值范围为0到255，无符号字整数的值范围为0到65535，无符号双字整数的值范围为0到2^32–1，无符号四字整数的值范围为0到2^64–1。有符号整数是在字节、字等中作为无符号保存的有符号二进制数。符号位设置为负整数，清除为正整数和零。整数值的范围从-128到+127（字节整数），从-32768到+32767（字整数），从-2^31到+2^31–1（双字整数），从-2^63到+2^63–1（四字整数）。</p>
+<p>Now we will work only with integer numbers, so let’s see to it. There two types of integer: unsigned and signed. Unsigned integers are unsigned binary numbers contained in a byte, word, doubleword, and quadword. Their values range from 0 to 255 for an unsigned byte integer, from 0 to 65,535 for an unsigned word integer, from 0 to 2^32 – 1 for an unsigned doubleword integer, and from 0 to 2^64 – 1 for an unsigned quadword integer. Signed integers are signed binary numbers held as unsigned in a byte, word and etc… The sign bit is set for negative integers and cleared for positive integers and zero. Integer values range from –128 to +127 for a byte integer, from –32,768 to +32,767 for a word integer,from –2^31 to +2^31 – 1 for a doubleword integer, and from –2^63 to +2^63 – 1 for a quadword integer.</p>
+<h4 id="节"><a href="#节" class="headerlink" title="节"></a>节</h4><p>Sections</p>
+<p>如上所述，每个汇编程序都由段组成，可以是数据部分、文本部分和bss部分。让我们看看数据部分，它是声明初始化常量的要地点。例如：</p>
+<p>As i wrote above, every assembly program consists from sections, it can be data section, text section and bss section. Let’s look on data section.It’s main point - to declare initialized constants. For example:</p>
+<pre class=" language-nasm"><code class="language-nasm"><span class="token keyword">section .data</span>
+    <span class="token label function">num1:</span>   equ <span class="token number">100</span>
+    <span class="token label function">num2:</span>   equ <span class="token number">50</span>
+    <span class="token label function">msg:</span>    db <span class="token string">"Sum is correct"</span>, <span class="token number">10</span></code></pre>
+<p>好的，这里几乎都清楚了。3个名为num1、num2、msg的常量，值为100、50和“Sum is correct”，10。但是什么是db，equ？实际是NASM支持许多伪指令之一：</p>
+<p>Ok, it is almost all clear here. 3 constants with name num1, num2, msg and with values 100, 50 and “Sum is correct”, 10. But what is it db, equ? Actual NASM supports a number of pseudo-instructions:</p>
+<ul>
+<li><p>DB、DW、DD、DQ、DT、DO、DY和DZ-用于声明初始化数据。例如：</p>
+</li>
+<li><p>DB, DW, DD, DQ, DT, DO, DY and DZ - are used for declaring initialized data. For example:</p>
+</li>
+</ul>
+<pre class=" language-nasm"><code class="language-nasm"><span class="token comment" spellcheck="true">;; Initialize 4 bytes 1h, 2h, 3h, 4h</span>
+db <span class="token number">0x01</span>,<span class="token number">0x02</span>,<span class="token number">0x03</span>,<span class="token number">0x04</span>
+
+<span class="token comment" spellcheck="true">;; Initialize word to 0x12 0x34</span>
+dw    <span class="token number">0x1234</span></code></pre>
+<ul>
+<li><p>RESB, RESW, RESD, RESQ, REST, RESO, RESY and RESZ -用于声明未初始化的变量</p>
+</li>
+<li><p>INCBIN - 包含外部二进制文件</p>
+</li>
+<li><p>EQU - 定义常量。例如：</p>
+</li>
+<li><p>RESB, RESW, RESD, RESQ, REST, RESO, RESY and RESZ - are used for declaring non initialized variables</p>
+</li>
+<li><p>INCBIN - includes External Binary Files</p>
+</li>
+<li><p>EQU - defines constant. For example:</p>
+</li>
+</ul>
+<pre class=" language-nasm"><code class="language-nasm"><span class="token comment" spellcheck="true">;; now one is 1</span>
+one equ <span class="token number">1</span></code></pre>
+<p>TIMES - 重复的指令或数据。（描述将在下一篇文章中）</p>
+<p>TIMES - Repeating Instructions or Data. (description will be in next posts)</p>
+<h4 id="算术运算"><a href="#算术运算" class="headerlink" title="算术运算"></a>算术运算</h4><p>Arithmetic operations</p>
+<p>下面是算术指令的简短列表：</p>
+<ul>
+<li><code>ADD</code> - 整数加法</li>
+<li><code>SUB</code> - 减法</li>
+<li><code>MUL</code> - 无符号乘法</li>
+<li><code>IMUL</code> - 有符号乘法</li>
+<li><code>DIV</code> - 无符号除法</li>
+<li><code>IDIV</code> - 有符号除法</li>
+<li><code>INC</code> - 递增</li>
+<li><code>DEC</code> - 递减</li>
+<li><code>NEG</code> - 求补运算</li>
+</ul>
+<p>我们将在这篇文章的练习中看到其中的一些。其他将在下一篇文章中讨论。</p>
+<p>There is short list of arithmetic instructions:</p>
+<ul>
+<li><code>ADD</code> - integer add</li>
+<li><code>SUB</code> - substract</li>
+<li><code>MUL</code> - unsigned multiply</li>
+<li><code>IMUL</code> - signed multiply</li>
+<li><code>DIV</code> - unsigned divide</li>
+<li><code>IDIV</code> - signed divide</li>
+<li><code>INC</code> - increment</li>
+<li><code>DEC</code> - decrement</li>
+<li><code>NEG</code> - negate</li>
+</ul>
+<p>Some of it we will see at practice in this post. Other will be covered in next posts.</p>
+<h4 id="控制流"><a href="#控制流" class="headerlink" title="控制流"></a>控制流</h4><p>Control flow</p>
+<p>通常编程语言能够改变求值顺序（使用if语句、case语句、goto等），而汇编语言也有这种能力。在这里我们将看到一些。cmp指令用于执行两个值之间的比较。它与条件跳转指令一起用于决策。例如：</p>
+<p>Usually programming languages have ability to change order of evaluation (with if statement, case statement, goto and etc…) and assembly has it too. Here we will see some of it. There is cmp instruction for performing comparison between two values. It is used along with the conditional jump instruction for decision making. For example:</p>
+<pre class=" language-nasm"><code class="language-nasm"><span class="token comment" spellcheck="true">;; compare rax with 50</span>
+cmp <span class="token register variable">rax</span>, <span class="token number">50</span></code></pre>
+<p>cmp指令只比较两个值，但不会影响它们，也不会根据比较结果执行任何操作。对于比较后执行的任何操作，都有条件跳转指令。它可以是下面的其中之一：</p>
+<p>The <code>cmp</code> instruction just compares 2 values, but doesn’t affect them and doesn’t execute anything depend on result of comparison. For performing any actions after comparison there is conditional jump instructions. It can be one of it:</p>
+<ul>
+<li><code>JE</code> - 如果相等</li>
+<li><code>JZ</code> - 如果为零</li>
+<li><code>JNE</code> - 如果不相等</li>
+<li><code>JNZ</code> - 如果不为零</li>
+<li><code>JG</code> - 如果第一个操作数大于第二个操作数</li>
+<li><code>JGE</code> - 如果第一个操作数大于或等于第二个操作数</li>
+<li><code>JA</code> - 与JG相同，但执行无符号比较</li>
+<li><code>JAE</code> - 与JGE相同，但执行无符号比较</li>
+</ul>
+<ul>
+<li><code>JE</code> - if equal</li>
+<li><code>JZ</code> - if zero</li>
+<li><code>JNE</code> - if not equal</li>
+<li><code>JNZ</code> - if not zero</li>
+<li><code>JG</code> - if first operand is greater than second</li>
+<li><code>JGE</code> - if first operand is greater or equal to second</li>
+<li><code>JA</code> - the same that JG, but performs unsigned comparison</li>
+<li><code>JAE</code> - the same that JGE, but performs unsigned comparison</li>
+</ul>
+<p>例如，如果我们想在C中生成类似if/else的语句：</p>
+<p>For example if we want to make something like if/else statement in C:</p>
+<pre class=" language-c"><code class="language-c"><span class="token keyword">if</span> <span class="token punctuation">(</span>rax <span class="token operator">!=</span> <span class="token number">50</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">exit</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+    <span class="token function">right</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>在汇编中:</p>
+<p>will be in assembly:</p>
+<pre class=" language-nasm"><code class="language-nasm"><span class="token comment" spellcheck="true">;; compare rax with 50</span>
+cmp <span class="token register variable">rax</span>, <span class="token number">50</span>
+<span class="token comment" spellcheck="true">;; perform .exit if rax is not equal 50</span>
+jne .exit
+jmp .right</code></pre>
+<p>还有无条件跳转语法：</p>
+<p>There is also unconditional jump with syntax:</p>
+<pre class=" language-nasm"><code class="language-nasm">JMP label</code></pre>
+<p>例子</p>
+<pre class=" language-nasm"><code class="language-nasm"><span class="token label function">_start:</span>
+    <span class="token comment" spellcheck="true">;; ....</span>
+    <span class="token comment" spellcheck="true">;; do something and jump to .exit label</span>
+    <span class="token comment" spellcheck="true">;; ....</span>
+    jmp .exit
+
+<span class="token label function">.exit:</span>
+    mov    <span class="token register variable">rax</span>, <span class="token number">60</span>
+    mov    <span class="token register variable">rdi</span>, <span class="token number">0</span>
+    syscall</code></pre>
+<p>在这里我们可以有一些代码在开始标签之后，所有这些代码将被执行，汇编转移控制指令到.Excel标签和代码之后。退出代码将开始执行。</p>
+<p>Here we have can have some code which will be after _start label, and all of this code will be executed, assembly transfer control to .exit label, and code after .exit: will start to execute.</p>
+<p>在循环中经常使用无条件跳转。例如，我们有标签和一些代码。此代码执行的任何操作，如果条件不成功，则跳转到此代码的开头。循环将在下一部分中介绍。</p>
+<p>Often unconditional jump uses in loops. For example we have label and some code after it. This code executes anything, than we have condition and jump to the start of this code if condition is not successfully. Loops will be covered in next parts.</p>
+<h4 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h4><p>Example</p>
+<p>让我们看一个简单的例子。它将取两个整数，得到这些数的和，并与预定义的数进行比较。如果预定义的数等于两个整数的和，那么它将在屏幕上打印一些东西，如果不是的话，只需退出即可。下面是我们示例的源代码：</p>
+<p>Let’s see simple example. It will take two integer numbers, get sum of these numbers and compare it with predefined number. If predefined number is equal to sum, it will print something on the screen, if not - just exit. Here is the source code of our example:</p>
+<pre class=" language-nasm"><code class="language-nasm"><span class="token keyword">section .data</span>
+    <span class="token comment" spellcheck="true">; Define constants</span>
+    <span class="token label function">num1:</span>   equ <span class="token number">100</span>
+    <span class="token label function">num2:</span>   equ <span class="token number">50</span>
+    <span class="token comment" spellcheck="true">; initialize message</span>
+    <span class="token label function">msg:</span>    db <span class="token string">"Sum is correct\n"</span>
+
+<span class="token keyword">section .text</span>
+
+    <span class="token keyword">global _start</span>
+
+<span class="token comment" spellcheck="true">;; entry point</span>
+<span class="token label function">_start:</span>
+    <span class="token comment" spellcheck="true">; set num1's value to rax</span>
+    mov <span class="token register variable">rax</span>, num1
+    <span class="token comment" spellcheck="true">; set num2's value to rbx</span>
+    mov <span class="token register variable">rbx</span>, num2
+    <span class="token comment" spellcheck="true">; get sum of rax and rbx, and store it's value in rax</span>
+    add <span class="token register variable">rax</span>, <span class="token register variable">rbx</span>
+    <span class="token comment" spellcheck="true">; compare rax and 150</span>
+    cmp <span class="token register variable">rax</span>, <span class="token number">150</span>
+    <span class="token comment" spellcheck="true">; go to .exit label if rax and 150 are not equal</span>
+    jne .exit
+    <span class="token comment" spellcheck="true">; go to .rightSum label if rax and 150 are equal</span>
+    jmp .rightSum
+
+<span class="token comment" spellcheck="true">; Print message that sum is correct</span>
+<span class="token label function">.rightSum:</span>
+    <span class="token comment" spellcheck="true">;; write syscall</span>
+    mov     <span class="token register variable">rax</span>, <span class="token number">1</span>
+    <span class="token comment" spellcheck="true">;; file descritor, standard output</span>
+    mov     <span class="token register variable">rdi</span>, <span class="token number">1</span>
+    <span class="token comment" spellcheck="true">;; message address</span>
+    mov     <span class="token register variable">rsi</span>, msg
+    <span class="token comment" spellcheck="true">;; length of message</span>
+    mov     <span class="token register variable">rdx</span>, <span class="token number">15</span>
+    <span class="token comment" spellcheck="true">;; call write syscall</span>
+    syscall
+    <span class="token comment" spellcheck="true">; exit from program</span>
+    jmp .exit
+
+<span class="token comment" spellcheck="true">; exit procedure</span>
+<span class="token label function">.exit:</span>
+    <span class="token comment" spellcheck="true">; exit syscall</span>
+    mov    <span class="token register variable">rax</span>, <span class="token number">60</span>
+    <span class="token comment" spellcheck="true">; exit code</span>
+    mov    <span class="token register variable">rdi</span>, <span class="token number">0</span>
+    <span class="token comment" spellcheck="true">; call exit syscall</span>
+    syscall</code></pre>
+<p>让我们看看源代码。首先有两个常数num1、num2和变量msg的数据段，其值为“Sum is correct\n”。现在看14行。有程序开始的入口点。我们将num1和num2值传输到通用寄存器rax和rbx。用加法指令求和。在执行add指令后，它计算rax和rbx的值之和，并将其值存储到rax。现在我们有了rax寄存器中num1和num2的和。</p>
+<p>Let’s go through the source code. First of all there is data section with two constants num1, num2 and variable msg with “Sum is correct\n” value. Now look at 14 line. There is begin of program’s entry point. We transfer num1 and num2 values to general purpose registers rax and rbx. Sum it with add instruction. After execution of add instruction, it calculates sum of values from rax and rbx and store it’s value to rax. Now we have sum of num1 and num2 in the rax register.</p>
+<p>好的，我们有值为100的num1和值为50的num2。我们的总数必须是150。让我们用cmp指令检查一下。在比较RAX和150之后，我们检查比较的结果，如果RAX和150不相等（用JNE检查），我们去.exit标签，如果它们相等，我们去.rightSum标签。</p>
+<p>Ok we have num1 which is 100 and num2 which is 50. Our sum must be 150. Let’s check it with cmp instruction. After comparison rax and 150 we check result of comparison, if rax and 150 are not equal (checking it with jne) we go to .exit label, if they are equal we go to .rightSum label.</p>
+<p>现在我们有两个标签：.exit和.rightSum。首先是设置60到rax，它是退出系统的调用码，0是rdi，它是一个退出码。第二个是.rightSum ,非常简单，它只是打印出”Sum is correct”。</p>
+<p>Now we have two labels: .exit and .rightSum. First is just sets 60 to rax, it is exit system call number, and 0 to rdi, it is a exit code. Second is .rightSum is pretty easy, it just prints Sum is correct.</p>
+
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://zhanweisun.github.io" rel="external nofollow noreferrer">孙老师</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://zhanweisun.github.io/2020/01/09/say-hello-to-x86-64-assembly-part-2/">http://zhanweisun.github.io/2020/01/09/say-hello-to-x86-64-assembly-part-2/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="http://zhanweisun.github.io" target="_blank">孙老师</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/x86/">
+                                    <span class="chip bg-color">x86</span>
+                                </a>
+                            
+                                <a href="/tags/x64/">
+                                    <span class="chip bg-color">x64</span>
+                                </a>
+                            
+                                <a href="/tags/%E6%B1%87%E7%BC%96/">
+                                    <span class="chip bg-color">汇编</span>
+                                </a>
+                            
+                                <a href="/tags/assembly/">
+                                    <span class="chip bg-color">assembly</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    
+    <div class="social-share" data-sites="qq,qzone,wechat,weibo,douban" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2020/01/10/say-hello-to-x86-64-assembly-part-3/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="Say hello to x86_64 Assembly [part 3]">
+                        
+                        <span class="card-title">Say hello to x86_64 Assembly [part 3]</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            翻译原文地址翻译原文地址
+Say hello to x86_64 Assembly [part 3]堆栈是存储器中的一个特殊区域，其工作原理是后进先出。
+The stack is special region in memory, whic
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2020-01-10
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            孙老师
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/x86/">
+                        <span class="chip bg-color">x86</span>
+                    </a>
+                    
+                    <a href="/tags/x64/">
+                        <span class="chip bg-color">x64</span>
+                    </a>
+                    
+                    <a href="/tags/%E6%B1%87%E7%BC%96/">
+                        <span class="chip bg-color">汇编</span>
+                    </a>
+                    
+                    <a href="/tags/assembly/">
+                        <span class="chip bg-color">assembly</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2020/01/08/adb-chang-yong-ming-ling-ji-lu/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/19.jpg" class="responsive-img" alt="android 常用命令记录">
+                        
+                        <span class="card-title">android 常用命令记录</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            android 常用命令记录1.adb shell dumpsys meminfo查看指定金正名称或者进程id对应的内存信息,这个一般情况我们都是用来获取内存相关信息的
+例子：adb shell dumpsys meminfo [packa
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-01-08
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            孙老师
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/android/">
+                        <span class="chip bg-color">android</span>
+                    </a>
+                    
+                    <a href="/tags/%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
+                        <span class="chip bg-color">常用命令</span>
+                    </a>
+                    
+                    <a href="/tags/shell/">
+                        <span class="chip bg-color">shell</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+    
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+    <footer class="page-footer bg-color">
+    <div class="container row center-align">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            <span id="year">年份</span>
+            <a href="http://zhanweisun.github.io" target="_blank">孙老师</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+            
+            <span id="sitetime">载入运行时间...</span>
+            <script>
+                function siteTime() {
+                    window.setTimeout("siteTime()", 1000);
+                    var seconds = 1000;
+                    var minutes = seconds * 60;
+                    var hours = minutes * 60;
+                    var days = hours * 24;
+                    var years = days * 365;
+                    var today = new Date();
+                    var startYear = "2019";
+                    var startMonth = "12";
+                    var startDate = "4";
+                    var startHour = "18";
+                    var startMinute = "0";
+                    var startSecond = "0";
+                    var todayYear = today.getFullYear();
+                    var todayMonth = today.getMonth() + 1;
+                    var todayDate = today.getDate();
+                    var todayHour = today.getHours();
+                    var todayMinute = today.getMinutes();
+                    var todaySecond = today.getSeconds();
+                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
+                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
+                    var diff = t2 - t1;
+                    var diffYears = Math.floor(diff / years);
+                    var diffDays = Math.floor((diff / days) - diffYears * 365);
+                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
+                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
+                        minutes);
+                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
+                        diffMinutes * minutes) / seconds);
+                    if (startYear == todayYear) {
+                        document.getElementById("year").innerHTML = todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已运行 " + diffDays + " 天 " + diffHours +
+                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    } else {
+                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已运行 " + diffYears + " 年 " + diffDays +
+                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    }
+                }
+                setInterval(siteTime, 1000);
+            </script>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/zhanweisun" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:847491180@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=847491180" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 847491180" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+
+
+
+
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+$(function () {
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+});
+</script>
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <script type="text/javascript" src="/libs/background/ribbon-dynamic.js" async="async"></script>
+    
+    
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>
